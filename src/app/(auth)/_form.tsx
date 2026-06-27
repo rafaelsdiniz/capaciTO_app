@@ -21,7 +21,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Spacing } from '@/constants/theme';
+import { Logo } from '@/components/ui/logo';
+import { Brand, FontFamily, Radius, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
 export function AuthScreen({
@@ -42,6 +43,7 @@ export function AuthScreen({
           <ScrollView
             contentContainerStyle={styles.scroll}
             keyboardShouldPersistTaps="handled">
+            <Logo size="lg" style={styles.logo} />
             <View style={styles.header}>
               <ThemedText type="subtitle">{titulo}</ThemedText>
               {subtitulo ? (
@@ -103,10 +105,10 @@ export function PrimaryButton({
       disabled={bloqueado}
       style={({ pressed }) => [
         styles.button,
-        { backgroundColor: '#208AEF', opacity: bloqueado ? 0.5 : pressed ? 0.85 : 1 },
+        { backgroundColor: Brand.azulRio, opacity: bloqueado ? 0.5 : pressed ? 0.85 : 1 },
       ]}>
       {carregando ? (
-        <ActivityIndicator color="#ffffff" />
+        <ActivityIndicator color={Brand.branco} />
       ) : (
         <ThemedText type="default" style={styles.buttonText}>
           {titulo}
@@ -130,12 +132,13 @@ export function ErroMsg({ texto }: { texto?: string | null }) {
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   scroll: { flexGrow: 1, justifyContent: 'center', padding: Spacing.four, gap: Spacing.four },
+  logo: { alignSelf: 'center' },
   header: { gap: Spacing.two },
   form: { gap: Spacing.three },
   field: { gap: Spacing.one },
   input: {
     borderWidth: 1,
-    borderRadius: Spacing.two,
+    borderRadius: Radius.sm,
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.three,
     fontSize: 16,
@@ -143,12 +146,12 @@ const styles = StyleSheet.create({
   },
   button: {
     minHeight: 56,
-    borderRadius: Spacing.two,
+    borderRadius: Radius.sm,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: Spacing.four,
   },
-  buttonText: { color: '#ffffff', fontWeight: '700' },
-  erro: { backgroundColor: '#FDECEC', borderRadius: Spacing.two, padding: Spacing.three },
-  erroText: { color: '#C0392B' },
+  buttonText: { color: Brand.branco, fontFamily: FontFamily.corpoMedio, fontSize: 16 },
+  erro: { backgroundColor: '#FDECEC', borderRadius: Radius.sm, padding: Spacing.three },
+  erroText: { color: Brand.perigo },
 });
