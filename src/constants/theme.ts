@@ -60,18 +60,17 @@ export const Colors = {
 export type ThemeColor = keyof typeof Colors.light & keyof typeof Colors.dark;
 
 /**
- * Famílias tipográficas da marca. Os nomes batem com as fontes carregadas via
- * @expo-google-fonts (ver carregamento em src/app/_layout.tsx).
- * - Montserrat: títulos, logo, chamadas (autoridade, indústria).
- * - Inter: corpo, postagens, mensagens (legibilidade em telas).
- * - Barlow: dados técnicos, crachás, etiquetas/tags (#Tambaqui, datas).
+ * Famílias tipográficas da marca — Nunito (família redonda, próxima de
+ * Nimbus Sans Round). Carregada via @expo-google-fonts (ver src/app/_layout.tsx).
+ * A hierarquia é dada pelos pesos: Bold/SemiBold em títulos e tags, Regular/
+ * Medium no corpo.
  */
 export const FontFamily = {
-  tituloBold: 'Montserrat_700Bold',
-  tituloSemi: 'Montserrat_600SemiBold',
-  corpo: 'Inter_400Regular',
-  corpoMedio: 'Inter_500Medium',
-  tag: 'Barlow_500Medium',
+  tituloBold: 'Nunito_700Bold',
+  tituloSemi: 'Nunito_600SemiBold',
+  corpo: 'Nunito_400Regular',
+  corpoMedio: 'Nunito_500Medium',
+  tag: 'Nunito_600SemiBold',
 } as const;
 
 export const Fonts = Platform.select({
