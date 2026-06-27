@@ -9,7 +9,7 @@ import { Card } from '@/components/ui/card';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Screen } from '@/components/ui/screen';
 import { Tag } from '@/components/ui/tag';
-import { Brand, Spacing } from '@/constants/theme';
+import { Brand, Spacing, TabBarSpace } from '@/constants/theme';
 import { api } from '@/lib/api';
 import type { Candidatura } from '@/lib/api/types';
 
@@ -98,7 +98,7 @@ function formatarData(iso: string): string {
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  lista: { padding: Spacing.four, gap: Spacing.four },
+  lista: { padding: Spacing.four, paddingBottom: TabBarSpace, gap: Spacing.four },
   secao: { gap: Spacing.two },
   item: { gap: Spacing.two },
   itemEncerrado: { opacity: 0.7 },

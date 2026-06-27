@@ -10,7 +10,7 @@ import { Card } from '@/components/ui/card';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Screen } from '@/components/ui/screen';
 import { Tag } from '@/components/ui/tag';
-import { Brand, Spacing } from '@/constants/theme';
+import { Brand, Spacing, TabBarSpace } from '@/constants/theme';
 import { api } from '@/lib/api';
 import type { Vaga } from '@/lib/api/types';
 
@@ -74,7 +74,7 @@ export default function VagasIndustriaScreen() {
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  lista: { paddingHorizontal: Spacing.four, paddingBottom: Spacing.six, gap: Spacing.two },
+  lista: { paddingHorizontal: Spacing.four, paddingBottom: TabBarSpace, gap: Spacing.two },
   row: { flexDirection: 'row', alignItems: 'center', gap: Spacing.two },
   tags: { flexDirection: 'row', gap: Spacing.one, flexWrap: 'wrap' },
 });

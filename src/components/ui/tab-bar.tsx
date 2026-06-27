@@ -149,7 +149,15 @@ function CenterFab({ center }: { center: Center }) {
 const FAB = 52;
 
 const styles = StyleSheet.create({
-  host: { paddingHorizontal: Spacing.four, paddingTop: Spacing.two, backgroundColor: 'transparent' },
+  host: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    paddingHorizontal: Spacing.four,
+    paddingTop: Spacing.two,
+    backgroundColor: 'transparent',
+  },
   bar: {
     flexDirection: 'row',
     alignItems: 'center',

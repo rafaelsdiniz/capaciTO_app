@@ -5,7 +5,7 @@ import { CompetenciaBadge } from '@/components/capacitacao/competencia-badge';
 import { AppHeader } from '@/components/ui/app-header';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Screen } from '@/components/ui/screen';
-import { Brand, Spacing } from '@/constants/theme';
+import { Brand, Spacing, TabBarSpace } from '@/constants/theme';
 import { api } from '@/lib/api';
 import type { Certificacao } from '@/lib/api/types';
 
@@ -44,5 +44,5 @@ export default function CertificadosScreen() {
 }
 
 const styles = StyleSheet.create({
-  lista: { paddingHorizontal: Spacing.four, paddingBottom: Spacing.six, gap: Spacing.two },
+  lista: { paddingHorizontal: Spacing.four, paddingBottom: TabBarSpace, gap: Spacing.two },
 });

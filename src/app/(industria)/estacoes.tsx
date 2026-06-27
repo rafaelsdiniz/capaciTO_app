@@ -10,7 +10,7 @@ import { Card } from '@/components/ui/card';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Screen } from '@/components/ui/screen';
 import { Tag } from '@/components/ui/tag';
-import { Brand, Radius, Spacing } from '@/constants/theme';
+import { Brand, Radius, Spacing, TabBarSpace } from '@/constants/theme';
 import { api } from '@/lib/api';
 import type { Estacao } from '@/lib/api/types';
 
@@ -75,7 +75,7 @@ export default function EstacoesScreen() {
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  lista: { paddingHorizontal: Spacing.four, paddingBottom: Spacing.six, gap: Spacing.two },
+  lista: { paddingHorizontal: Spacing.four, paddingBottom: TabBarSpace, gap: Spacing.two },
   row: { flexDirection: 'row', alignItems: 'center', gap: Spacing.three },
   qrMini: { width: 48, height: 48, borderRadius: Radius.sm, backgroundColor: '#E6EEF4', alignItems: 'center', justifyContent: 'center' },
 });
