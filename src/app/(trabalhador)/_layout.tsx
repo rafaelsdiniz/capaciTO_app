@@ -1,4 +1,4 @@
-import { Tabs, useRouter } from 'expo-router';
+import { Tabs } from 'expo-router';
 
 import { type IconName } from '@/components/ui/button';
 import { TabBar } from '@/components/ui/tab-bar';
@@ -11,26 +11,18 @@ const ICONS: Record<string, IconName> = {
   perfil: 'person',
 };
 
-// Área do Trabalhador — abas Carteira, Aprender, Vagas, Perfil + FAB central Escanear.
+// Área do Trabalhador — 4 abas: Carteira, Aprender, Vagas, Perfil.
 export default function TrabalhadorLayout() {
-  const router = useRouter();
   return (
     <Tabs
       screenOptions={{ headerShown: false }}
-      tabBar={(props) => (
-        <TabBar
-          {...props}
-          icons={ICONS}
-          activeColor={Brand.azulRio}
-          center={{ icon: 'qr-code', color: Brand.azulRio, onPress: () => router.push('/escanear') }}
-        />
-      )}>
+      tabBar={(props) => <TabBar {...props} icons={ICONS} activeColor={Brand.azulRio} />}>
       <Tabs.Screen name="carteira" options={{ title: 'Carteira' }} />
       <Tabs.Screen name="aprender" options={{ title: 'Aprender' }} />
       <Tabs.Screen name="vagas" options={{ title: 'Vagas' }} />
       <Tabs.Screen name="perfil" options={{ title: 'Perfil' }} />
 
-      {/* Ação central + telas de detalhe (não viram aba) */}
+      {/* Telas de detalhe (não viram aba) */}
       <Tabs.Screen name="escanear" options={{ href: null }} />
       <Tabs.Screen name="certificados" options={{ href: null }} />
       <Tabs.Screen name="perfil-editar" options={{ href: null }} />

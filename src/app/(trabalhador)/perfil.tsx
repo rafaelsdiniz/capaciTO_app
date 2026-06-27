@@ -51,7 +51,7 @@ export default function PerfilScreen() {
 
   return (
     <Screen scroll padded={false}>
-      <AppHeader title="Minha conta" />
+      <AppHeader centered title="Minha conta" />
 
       <View style={styles.body}>
         {/* Cartão de identidade */}
@@ -71,6 +71,9 @@ export default function PerfilScreen() {
             ) : null}
           </View>
         </Card>
+
+        {/* Ação principal: ler QR da estação (fatia ao vivo) */}
+        <Button title="Escanear QR da estação" icon="qr-code" onPress={() => router.push('/escanear')} />
 
         {/* Atalhos */}
         <View style={styles.menu}>

@@ -8,11 +8,9 @@ import {
   KeyboardAvoidingView,
   Platform,
   Pressable,
-  ScrollView,
   StyleSheet,
   TextInput,
   View,
-  useWindowDimensions,
   type StyleProp,
   type TextInputProps,
   type ViewStyle,
@@ -34,30 +32,27 @@ import type { ApiError } from '@/lib/api/types';
 
 type IconName = keyof typeof Ionicons.glyphMap;
 
-const LoginColors = {
+const C = {
   primary: '#2F6FDB',
   ink: '#14213D',
   muted: '#6E7A8A',
   surface: Brand.branco,
-  page: '#EAF2FF',
   border: '#DDE7F6',
   input: '#F8FAFE',
-  tocantinsGold: '#F2A51A',
+  gold: '#F2A51A',
 } as const;
 
-const LoginHeroImage = require('@/assets/images/login-industria.jpg');
+const HeroImage = require('@/assets/images/login-industria.jpg');
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
-const BUTTON_SPRING = {
-  damping: 18,
-  mass: 0.75,
-  stiffness: 220,
-};
+const SPRING = { damping: 18, mass: 0.75, stiffness: 220 };
 
-// RF02: autentica via e-mail/telefone + senha, recebe token (JWT no backend).
+// Remove o contorno (quadrado) que o navegador desenha no input focado (RN Web).
+const NO_OUTLINE = (Platform.OS === 'web' ? { outlineStyle: 'none' } : null) as object | null;
+
+// RF02: autentica via e-mail + senha, recebe token JWT do backend.
 export default function LoginScreen() {
   const router = useRouter();
   const { entrar, carregando } = useSession();
-  const { height } = useWindowDimensions();
 
   const [identificador, setIdentificador] = useState('');
   const [senha, setSenha] = useState('');
@@ -68,83 +63,63 @@ export default function LoginScreen() {
   async function aoEntrar() {
     setErro(null);
     if (!identificador.trim() || !senha) {
-      setErro('Preencha e-mail/telefone e senha.');
+      setErro('Preencha e-mail e senha.');
       return;
     }
     try {
       await entrar({ identificador: identificador.trim(), senha });
-      // Sucesso: o gate em "/" redireciona conforme o papel (RF03).
       router.replace('/');
     } catch (e) {
-      setErro((e as ApiError)?.message ?? 'Nao foi possivel entrar. Tente novamente.');
+      setErro((e as ApiError)?.message ?? 'Não foi possível entrar. Tente novamente.');
     }
-  }
-
-  // Acesso livre/demo: entra com o trabalhador de exemplo do mock, sem credenciais.
-  async function aoEntrarDemo() {
-    setErro(null);
-    try {
-      await entrar({ identificador: 'maria@trab.com', senha: '123456' });
-      router.replace('/');
-    } catch (e) {
-      setErro((e as ApiError)?.message ?? 'Nao foi possivel entrar. Tente novamente.');
-    }
-  }
-
-  function aoRecuperarSenha() {
-    setErro('A recuperacao de senha sera liberada em breve.');
   }
 
   return (
-    <View style={styles.page}>
+    <View style={s.page}>
       <StatusBar style="light" />
-      <SafeAreaView style={styles.flex} edges={['top', 'bottom']}>
-        <KeyboardAvoidingView
-          style={styles.flex}
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-          <ScrollView
-            contentContainerStyle={[styles.scroll, { minHeight: Math.max(height, 700) }]}
-            keyboardShouldPersistTaps="handled"
-            showsVerticalScrollIndicator={false}>
-            <View style={[styles.shell, { minHeight: Math.max(height, 700) }]}>
-              <View style={styles.hero}>
-                <ImageBackground
-                  source={LoginHeroImage}
-                  resizeMode="cover"
-                  style={styles.heroImage}
-                  imageStyle={styles.heroImageAsset}>
-                  <View style={styles.heroScrim} />
-                  <View style={styles.heroShade} />
+      <SafeAreaView style={s.flex} edges={['top', 'bottom']}>
+        <KeyboardAvoidingView style={s.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+          <View style={s.flex}>
 
-                  <View style={styles.brandRow}>
-                    <View style={styles.brandMark}>
-                      <ThemedText style={styles.brandMarkText}>C</ThemedText>
-                    </View>
-                    <View style={styles.brandWord}>
-                      <ThemedText style={styles.brandName}>Capaci</ThemedText>
-                      <ThemedText style={styles.brandNameAccent}>TO</ThemedText>
-                    </View>
+            {/* ── Hero ─────────────────────────────────────────── */}
+            <View style={s.hero}>
+              <ImageBackground source={HeroImage} resizeMode="cover" style={s.heroImg} imageStyle={s.heroImgAsset}>
+                <View style={s.scrim} />
+                <View style={s.shade} />
+
+                <View style={s.brand}>
+                  <View style={s.brandMark}>
+                    <ThemedText style={s.brandMarkText}>C</ThemedText>
                   </View>
-
-                  <View style={styles.heroCopy}>
-                    <ThemedText style={styles.heroTitle}>Bem-vindo de volta!</ThemedText>
-                    <ThemedText style={styles.heroSubtitle}>
-                      Acesse sua carteira digital e continue evoluindo na industria.
-                    </ThemedText>
+                  <View style={s.brandWord}>
+                    <ThemedText style={s.brandName}>Capaci</ThemedText>
+                    <ThemedText style={s.brandNameAccent}>TO</ThemedText>
                   </View>
-                </ImageBackground>
-              </View>
-
-              <View style={styles.card}>
-                <View style={styles.formHeader}>
-                  <ThemedText style={styles.formTitle}>Entrar</ThemedText>
-                  <ThemedText style={styles.formSubtitle}>Use seu e-mail, telefone e senha cadastrados.</ThemedText>
                 </View>
 
-                <ErrorMessage texto={erro} />
+                <View style={s.heroCopy}>
+                  <ThemedText style={s.heroTitle}>Bem-vindo!</ThemedText>
+                  <ThemedText style={s.heroSubtitle}>
+                    Acesse sua carteira digital e continue evoluindo na industria.
+                  </ThemedText>
+                </View>
+              </ImageBackground>
+            </View>
+
+            {/* ── Card ─────────────────────────────────────────── */}
+            <View style={s.card}>
+
+              {/* Bloco superior: título + formulário + ação principal */}
+              <View style={s.cardTop}>
+                <View style={s.formHeader}>
+                  <ThemedText style={s.formTitle}>Entrar</ThemedText>
+                  <ThemedText style={s.formSubtitle}>Use seu e-mail e senha cadastrados.</ThemedText>
+                </View>
+
+                <ErrorBox texto={erro} />
 
                 <LoginField
-                  label="E-mail ou telefone"
+                  label="E-mail"
                   icon="mail-outline"
                   placeholder="seu@email.com"
                   autoCapitalize="none"
@@ -165,105 +140,83 @@ export default function LoginScreen() {
                       accessibilityRole="button"
                       accessibilityLabel={senhaVisivel ? 'Ocultar senha' : 'Mostrar senha'}
                       hitSlop={8}
-                      onPress={() => setSenhaVisivel((atual) => !atual)}>
-                      <Ionicons
-                        name={senhaVisivel ? 'eye-off-outline' : 'eye-outline'}
-                        size={20}
-                        color={LoginColors.muted}
-                      />
+                      onPress={() => setSenhaVisivel((v) => !v)}>
+                      <Ionicons name={senhaVisivel ? 'eye-off-outline' : 'eye-outline'} size={20} color={C.muted} />
                     </Pressable>
                   }
                 />
 
-                <View style={styles.optionsRow}>
-                  <MotionPressable
+                <View style={s.optionsRow}>
+                  <Btn
                     accessibilityRole="checkbox"
                     accessibilityState={{ checked: lembrar }}
-                    onPress={() => setLembrar((atual) => !atual)}
-                    hoverScale={1.01}
-                    pressScale={0.99}
-                    style={styles.rememberRow}>
-                    <View style={[styles.checkbox, lembrar && styles.checkboxActive]}>
+                    onPress={() => setLembrar((v) => !v)}
+                    style={s.rememberRow}>
+                    <View style={[s.checkbox, lembrar && s.checkboxOn]}>
                       {lembrar ? <Ionicons name="checkmark" size={13} color={Brand.branco} /> : null}
                     </View>
-                    <ThemedText style={styles.optionText}>Lembrar-me</ThemedText>
-                  </MotionPressable>
+                    <ThemedText style={s.optionText}>Lembrar-me</ThemedText>
+                  </Btn>
 
-                  <MotionPressable
+                  <Btn
                     accessibilityRole="button"
-                    onPress={aoRecuperarSenha}
+                    onPress={() => setErro('A recuperação de senha será liberada em breve.')}
                     hitSlop={8}
-                    hoverScale={1.012}
-                    pressScale={0.985}
-                    style={styles.forgotButton}>
-                    <ThemedText style={styles.forgotText}>Esqueceu a senha?</ThemedText>
-                  </MotionPressable>
+                    style={s.forgotBtn}>
+                    <ThemedText style={s.forgotText}>Esqueceu a senha?</ThemedText>
+                  </Btn>
                 </View>
 
-                <MotionPressable
+                <Btn
                   accessibilityRole="button"
                   onPress={aoEntrar}
                   disabled={carregando}
-                  style={[styles.primaryButton, carregando && styles.buttonDisabled]}>
-                  {carregando ? (
-                    <ActivityIndicator color={Brand.branco} />
-                  ) : (
-                    <ThemedText style={styles.primaryButtonText}>Entrar</ThemedText>
-                  )}
-                </MotionPressable>
+                  style={[s.primaryBtn, carregando && s.btnDisabled]}>
+                  {carregando
+                    ? <ActivityIndicator color={Brand.branco} />
+                    : <ThemedText style={s.primaryBtnText}>Entrar</ThemedText>}
+                </Btn>
+              </View>
 
-                <View style={styles.dividerRow}>
-                  <View style={styles.divider} />
-                  <ThemedText style={styles.dividerText}>ou entre com</ThemedText>
-                  <View style={styles.divider} />
+              {/* Bloco inferior: login social + criar conta */}
+              <View style={s.cardBottom}>
+                <View style={s.dividerRow}>
+                  <View style={s.divider} />
+                  <ThemedText style={s.dividerText}>ou entre com</ThemedText>
+                  <View style={s.divider} />
                 </View>
 
-                <View style={styles.socialRow}>
-                  <SocialIcon icon="logo-google" color="#DB4437" label="Google" />
+                <View style={s.socialRow}>
+                  <SocialIcon icon="logo-google"   color="#DB4437" label="Google" />
                   <SocialIcon icon="logo-linkedin" color="#0A66C2" label="LinkedIn" />
                   <SocialIcon icon="logo-facebook" color="#1877F2" label="Facebook" />
                 </View>
 
-                <MotionPressable
-                  accessibilityRole="button"
-                  onPress={aoEntrarDemo}
-                  disabled={carregando}
-                  hoverScale={1.012}
-                  pressScale={0.988}
-                  style={[styles.demoButton, carregando && styles.buttonDisabled]}>
-                  <Ionicons name="sparkles-outline" size={18} color={LoginColors.primary} />
-                  <ThemedText style={styles.demoButtonText}>Entrar como demonstracao</ThemedText>
-                </MotionPressable>
-
-                <View style={styles.footerRow}>
-                  <ThemedText style={styles.footerText}>Novo por aqui?</ThemedText>
+                <View style={s.footerRow}>
+                  <ThemedText style={s.footerText}>Novo por aqui?</ThemedText>
                   <Link href="/registro" asChild>
-                    <Pressable style={styles.createLink} accessibilityRole="button">
-                      <ThemedText style={styles.createLinkText}>Criar cadastro</ThemedText>
-                      <Ionicons name="arrow-forward" size={15} color={LoginColors.primary} />
+                    <Pressable style={s.createLink} accessibilityRole="button">
+                      <ThemedText style={s.createLinkText}>Criar cadastro</ThemedText>
+                      <Ionicons name="arrow-forward" size={15} color={C.primary} />
                     </Pressable>
                   </Link>
                 </View>
               </View>
             </View>
-          </ScrollView>
+
+          </View>
         </KeyboardAvoidingView>
       </SafeAreaView>
     </View>
   );
 }
 
-function MotionPressable({
-  children,
-  style,
-  disabled,
-  onPress,
-  accessibilityRole,
-  accessibilityLabel,
-  accessibilityState,
-  hitSlop,
-  hoverScale = 1.015,
-  pressScale = 0.985,
+// ── Subcomponentes ────────────────────────────────────────────────────────────
+
+function Btn({
+  children, style, disabled, onPress,
+  accessibilityRole, accessibilityLabel, accessibilityState, hitSlop,
+  hoverScale = 1.015, pressScale = 0.985,
 }: {
   children: ReactNode;
   style?: StyleProp<ViewStyle>;
@@ -278,27 +231,19 @@ function MotionPressable({
 }) {
   const hovered = useRef(false);
   const scale = useSharedValue(1);
-  const translateY = useSharedValue(0);
+  const ty = useSharedValue(0);
+  const anim = useAnimatedStyle(() => ({ transform: [{ translateY: ty.value }, { scale: scale.value }] }));
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: translateY.value }, { scale: scale.value }],
-  }));
-
-  function animateHover(active: boolean) {
+  function onHover(on: boolean) {
     if (disabled) return;
-    hovered.current = active;
-    scale.value = withSpring(active ? hoverScale : 1, BUTTON_SPRING);
-    translateY.value = withSpring(active ? -1 : 0, BUTTON_SPRING);
+    hovered.current = on;
+    scale.value = withSpring(on ? hoverScale : 1, SPRING);
+    ty.value = withSpring(on ? -1 : 0, SPRING);
   }
-
-  function animatePress(active: boolean) {
+  function onPress_(on: boolean) {
     if (disabled) return;
-    scale.value = withSpring(active ? pressScale : hovered.current ? hoverScale : 1, {
-      damping: active ? 20 : 16,
-      mass: 0.7,
-      stiffness: active ? 280 : 210,
-    });
-    translateY.value = withSpring(active ? 0.5 : hovered.current ? -1 : 0, BUTTON_SPRING);
+    scale.value = withSpring(on ? pressScale : hovered.current ? hoverScale : 1, { damping: on ? 20 : 16, mass: 0.7, stiffness: on ? 280 : 210 });
+    ty.value = withSpring(on ? 0.5 : hovered.current ? -1 : 0, SPRING);
   }
 
   return (
@@ -308,12 +253,12 @@ function MotionPressable({
       accessibilityState={{ ...accessibilityState, disabled }}
       disabled={disabled}
       hitSlop={hitSlop}
-      onHoverIn={() => animateHover(true)}
-      onHoverOut={() => animateHover(false)}
+      onHoverIn={() => onHover(true)}
+      onHoverOut={() => onHover(false)}
       onPress={onPress}
-      onPressIn={() => animatePress(true)}
-      onPressOut={() => animatePress(false)}
-      style={[style, animatedStyle]}>
+      onPressIn={() => onPress_(true)}
+      onPressOut={() => onPress_(false)}
+      style={[style, anim]}>
       {children}
     </AnimatedPressable>
   );
@@ -321,57 +266,35 @@ function MotionPressable({
 
 function SocialIcon({ icon, color, label }: { icon: IconName; color: string; label: string }) {
   return (
-    <MotionPressable
-      accessibilityRole="button"
-      accessibilityLabel={`Login com ${label} apenas visual`}
-      hoverScale={1.045}
-      pressScale={0.965}
-      onPress={() => undefined}
-      style={styles.socialButton}>
+    <Btn accessibilityRole="button" accessibilityLabel={`Login com ${label} (apenas visual)`} hoverScale={1.045} pressScale={0.965} onPress={() => undefined} style={s.socialBtn}>
       <Ionicons name={icon} size={22} color={color} />
-    </MotionPressable>
+    </Btn>
   );
 }
 
-function LoginField({
-  label,
-  icon,
-  right,
-  onFocus,
-  onBlur,
-  ...inputProps
-}: TextInputProps & { label: string; icon: IconName; right?: ReactNode }) {
-  const [focado, setFocado] = useState(false);
+function LoginField({ label, icon, right, onFocus, onBlur, ...inputProps }: TextInputProps & { label: string; icon: IconName; right?: ReactNode }) {
+  const [focused, setFocused] = useState(false);
   const focus = useSharedValue(0);
-
-  const inputBoxStyle = useAnimatedStyle(() => ({
-    borderColor: interpolateColor(focus.value, [0, 1], [LoginColors.border, LoginColors.primary]),
-    backgroundColor: interpolateColor(focus.value, [0, 1], [LoginColors.input, Brand.branco]),
+  const boxAnim = useAnimatedStyle(() => ({
+    borderColor: interpolateColor(focus.value, [0, 1], [C.border, C.primary]),
+    backgroundColor: interpolateColor(focus.value, [0, 1], [C.input, Brand.branco]),
     shadowOpacity: focus.value * 0.16,
     transform: [{ translateY: -focus.value }],
   }));
 
   return (
-    <View style={styles.field}>
-      <ThemedText style={styles.fieldLabel}>{label}</ThemedText>
-      <Animated.View style={[styles.inputBox, inputBoxStyle]}>
-        <View style={[styles.inputIconBox, focado && styles.inputIconBoxActive]}>
-          <Ionicons name={icon} size={18} color={focado ? LoginColors.primary : LoginColors.muted} />
+    <View style={s.field}>
+      <ThemedText style={s.fieldLabel}>{label}</ThemedText>
+      <Animated.View style={[s.inputBox, boxAnim]}>
+        <View style={[s.inputIcon, focused && s.inputIconOn]}>
+          <Ionicons name={icon} size={18} color={focused ? C.primary : C.muted} />
         </View>
         <TextInput
-          style={styles.input}
+          style={[s.input, NO_OUTLINE]}
           placeholderTextColor="#9AA8BA"
-          selectionColor={LoginColors.primary}
-          onFocus={(event) => {
-            setFocado(true);
-            focus.value = withTiming(1, { duration: 180, easing: Easing.out(Easing.cubic) });
-            onFocus?.(event);
-          }}
-          onBlur={(event) => {
-            setFocado(false);
-            focus.value = withTiming(0, { duration: 180, easing: Easing.out(Easing.cubic) });
-            onBlur?.(event);
-          }}
+          selectionColor={C.primary}
+          onFocus={(e) => { setFocused(true); focus.value = withTiming(1, { duration: 180, easing: Easing.out(Easing.cubic) }); onFocus?.(e); }}
+          onBlur={(e) => { setFocused(false); focus.value = withTiming(0, { duration: 180, easing: Easing.out(Easing.cubic) }); onBlur?.(e); }}
           {...inputProps}
         />
         {right}
@@ -380,355 +303,121 @@ function LoginField({
   );
 }
 
-function ErrorMessage({ texto }: { texto?: string | null }) {
+function ErrorBox({ texto }: { texto?: string | null }) {
   if (!texto) return null;
   return (
-    <View style={styles.errorBox}>
+    <View style={s.errorBox}>
       <Ionicons name="alert-circle-outline" size={18} color={Brand.perigo} />
-      <ThemedText style={styles.errorText}>{texto}</ThemedText>
+      <ThemedText style={s.errorText}>{texto}</ThemedText>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+// ── Estilos ───────────────────────────────────────────────────────────────────
+
+const s = StyleSheet.create({
   flex: { flex: 1 },
-  page: {
-    flex: 1,
-    backgroundColor: LoginColors.page,
-  },
-  scroll: {
-    flexGrow: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  shell: {
-    width: '100%',
-    maxWidth: 430,
-    overflow: 'hidden',
-    backgroundColor: LoginColors.surface,
-    shadowColor: '#163B73',
-    shadowOpacity: 0.16,
-    shadowRadius: 26,
-    shadowOffset: { width: 0, height: 18 },
-    elevation: 10,
-  },
-  hero: {
-    minHeight: 330,
-    overflow: 'hidden',
-    backgroundColor: '#111820',
-  },
-  heroImage: {
-    flex: 1,
-  },
-  heroImageAsset: {
-    transform: [{ scale: 1.04 }],
-  },
-  heroScrim: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    bottom: 0,
-    left: 0,
-    backgroundColor: 'rgba(5, 12, 20, 0.70)',
-  },
-  heroShade: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    height: 150,
-    backgroundColor: 'rgba(5, 12, 20, 0.40)',
-  },
-  brandRow: {
-    position: 'absolute',
-    top: Spacing.four,
-    left: Spacing.four,
-    zIndex: 2,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.two,
-  },
-  brandMark: {
-    width: 34,
-    height: 34,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(255,255,255,0.96)',
-  },
-  brandMarkText: {
-    color: LoginColors.primary,
-    fontFamily: FontFamily.tituloBold,
-    fontSize: 20,
-    lineHeight: 24,
-  },
-  brandWord: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-  },
-  brandName: {
-    color: Brand.branco,
-    fontFamily: FontFamily.tituloBold,
-    fontSize: 22,
-    lineHeight: 28,
-  },
-  brandNameAccent: {
-    color: LoginColors.tocantinsGold,
-    fontFamily: FontFamily.tituloBold,
-    fontSize: 22,
-    lineHeight: 28,
-  },
-  heroCopy: {
-    position: 'absolute',
-    left: Spacing.four,
-    right: Spacing.four,
-    bottom: 72,
-    zIndex: 2,
-    gap: Spacing.two,
-  },
-  heroTitle: {
-    color: Brand.branco,
-    fontFamily: FontFamily.tituloBold,
-    fontSize: 31,
-    lineHeight: 36,
-  },
-  heroSubtitle: {
-    width: '88%',
-    color: '#EEF5FF',
-    fontFamily: FontFamily.corpoMedio,
-    fontSize: 14,
-    lineHeight: 20,
-  },
+  page: { flex: 1, backgroundColor: '#111820' },
+
+  // Hero
+  hero: { height: 220, overflow: 'hidden', backgroundColor: '#111820' },
+  heroImg: { flex: 1 },
+  heroImgAsset: { transform: [{ scale: 1.04 }] },
+  scrim: { position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, backgroundColor: 'rgba(5,12,20,0.70)' },
+  shade: { position: 'absolute', left: 0, right: 0, bottom: 0, height: 100, backgroundColor: 'rgba(5,12,20,0.40)' },
+
+  brand: { position: 'absolute', top: Spacing.four, left: Spacing.four, zIndex: 2, flexDirection: 'row', alignItems: 'center', gap: Spacing.two },
+  brandMark: { width: 34, height: 34, borderRadius: 12, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.96)' },
+  brandMarkText: { color: C.primary, fontFamily: FontFamily.tituloBold, fontSize: 20, lineHeight: 24 },
+  brandWord: { flexDirection: 'row', alignItems: 'baseline' },
+  brandName: { color: Brand.branco, fontFamily: FontFamily.tituloBold, fontSize: 22, lineHeight: 28 },
+  brandNameAccent: { color: C.gold, fontFamily: FontFamily.tituloBold, fontSize: 22, lineHeight: 28 },
+
+  heroCopy: { position: 'absolute', left: Spacing.four, right: Spacing.four, bottom: 52, zIndex: 2, gap: Spacing.one },
+  heroTitle: { color: Brand.branco, fontFamily: FontFamily.tituloBold, fontSize: 28, lineHeight: 34 },
+  heroSubtitle: { width: '88%', color: '#EEF5FF', fontFamily: FontFamily.corpoMedio, fontSize: 13, lineHeight: 19 },
+
+  // Card — dois blocos: form (topo) e social/cadastro (base), distribuídos.
   card: {
     flex: 1,
-    marginTop: -44,
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
+    marginTop: -30,
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
     paddingHorizontal: Spacing.four,
     paddingTop: Spacing.five,
     paddingBottom: Spacing.four,
-    gap: Spacing.three,
-    backgroundColor: LoginColors.surface,
+    backgroundColor: C.surface,
+    justifyContent: 'space-between',
   },
-  formHeader: {
-    alignItems: 'center',
-    gap: Spacing.one,
-    marginBottom: Spacing.one,
-  },
-  formTitle: {
-    color: LoginColors.primary,
-    fontFamily: FontFamily.tituloBold,
-    fontSize: 27,
-    lineHeight: 34,
-  },
-  formSubtitle: {
-    color: LoginColors.muted,
-    fontFamily: FontFamily.corpo,
-    fontSize: 14,
-    lineHeight: 20,
-    textAlign: 'center',
-  },
-  field: {
-    gap: Spacing.two,
-  },
-  fieldLabel: {
-    color: LoginColors.ink,
-    fontFamily: FontFamily.corpoMedio,
-    fontSize: 13,
-    lineHeight: 18,
-  },
+  cardTop: { gap: Spacing.three },
+  cardBottom: { gap: Spacing.three },
+
+  formHeader: { alignItems: 'center', gap: Spacing.one, marginBottom: Spacing.one },
+  formTitle: { color: C.primary, fontFamily: FontFamily.tituloBold, fontSize: 24, lineHeight: 30 },
+  formSubtitle: { color: C.muted, fontFamily: FontFamily.corpo, fontSize: 13, lineHeight: 19, textAlign: 'center' },
+
+  // Fields
+  field: { gap: Spacing.one },
+  fieldLabel: { color: C.ink, fontFamily: FontFamily.corpoMedio, fontSize: 13, lineHeight: 18 },
   inputBox: {
-    minHeight: 58,
+    minHeight: 52,
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.two,
     borderWidth: 1.5,
-    borderColor: LoginColors.border,
-    borderRadius: 16,
-    backgroundColor: LoginColors.input,
+    borderColor: C.border,
+    borderRadius: 14,
+    backgroundColor: C.input,
     paddingHorizontal: Spacing.two,
-    shadowColor: LoginColors.primary,
+    shadowColor: C.primary,
     shadowOpacity: 0,
-    shadowRadius: 16,
-    shadowOffset: { width: 0, height: 8 },
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 6 },
     elevation: 1,
   },
-  inputIconBox: {
-    width: 38,
-    height: 38,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 13,
-    backgroundColor: '#EAF2FF',
-  },
-  inputIconBoxActive: {
-    backgroundColor: '#DCE9FF',
-  },
-  input: {
-    flex: 1,
+  inputIcon: { width: 34, height: 34, alignItems: 'center', justifyContent: 'center', borderRadius: 10, backgroundColor: '#EAF2FF' },
+  inputIconOn: { backgroundColor: '#DCE9FF' },
+  input: { flex: 1, minHeight: 48, paddingVertical: Spacing.two, paddingRight: Spacing.two, color: C.ink, fontFamily: FontFamily.corpo, fontSize: 15 },
+
+  // Options row
+  optionsRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: Spacing.two },
+  rememberRow: { minHeight: 32, flexDirection: 'row', alignItems: 'center', gap: Spacing.two },
+  checkbox: { width: 18, height: 18, borderRadius: 5, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: '#B9C7DC', backgroundColor: Brand.branco },
+  checkboxOn: { borderColor: C.primary, backgroundColor: C.primary },
+  optionText: { color: C.muted, fontFamily: FontFamily.corpo, fontSize: 13, lineHeight: 18 },
+  forgotBtn: { minHeight: 32, justifyContent: 'center' },
+  forgotText: { color: C.primary, fontFamily: FontFamily.corpoMedio, fontSize: 13, lineHeight: 18 },
+
+  // Buttons
+  primaryBtn: {
     minHeight: 52,
-    paddingVertical: Spacing.three,
-    paddingRight: Spacing.two,
-    color: LoginColors.ink,
-    fontFamily: FontFamily.corpo,
-    fontSize: 15,
-  },
-  optionsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: Spacing.two,
-  },
-  rememberRow: {
-    minHeight: 32,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.two,
-  },
-  checkbox: {
-    width: 18,
-    height: 18,
-    borderRadius: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: '#B9C7DC',
-    backgroundColor: Brand.branco,
-  },
-  checkboxActive: {
-    borderColor: LoginColors.primary,
-    backgroundColor: LoginColors.primary,
-  },
-  optionText: {
-    color: LoginColors.muted,
-    fontFamily: FontFamily.corpo,
-    fontSize: 13,
-    lineHeight: 18,
-  },
-  forgotText: {
-    color: LoginColors.primary,
-    fontFamily: FontFamily.corpoMedio,
-    fontSize: 13,
-    lineHeight: 18,
-  },
-  forgotButton: {
-    minHeight: 32,
-    justifyContent: 'center',
-  },
-  primaryButton: {
-    minHeight: 56,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: Radius.md,
-    backgroundColor: LoginColors.primary,
-    shadowColor: LoginColors.primary,
+    backgroundColor: C.primary,
+    shadowColor: C.primary,
     shadowOpacity: 0.28,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 8 },
-    elevation: 4,
-  },
-  buttonDisabled: {
-    opacity: 0.58,
-  },
-  primaryButtonText: {
-    color: Brand.branco,
-    fontFamily: FontFamily.corpoMedio,
-    fontSize: 16,
-    lineHeight: 22,
-  },
-  dividerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.three,
-    marginVertical: Spacing.one,
-  },
-  divider: {
-    flex: 1,
-    height: 1,
-    backgroundColor: LoginColors.border,
-  },
-  dividerText: {
-    color: '#9AA8BA',
-    fontFamily: FontFamily.corpo,
-    fontSize: 13,
-    lineHeight: 18,
-  },
-  socialRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: Spacing.three,
-  },
-  socialButton: {
-    width: 48,
-    height: 48,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: LoginColors.border,
-    borderRadius: Radius.md,
-    backgroundColor: Brand.branco,
-    shadowColor: LoginColors.primary,
-    shadowOpacity: 0.08,
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 6 },
-    elevation: 2,
+    elevation: 4,
   },
-  demoButton: {
-    minHeight: 52,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: Spacing.two,
-    borderWidth: 1,
-    borderColor: LoginColors.border,
-    borderRadius: Radius.md,
-    backgroundColor: '#F6F9FF',
-  },
-  demoButtonText: {
-    color: LoginColors.primary,
-    fontFamily: FontFamily.corpoMedio,
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  footerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexWrap: 'wrap',
-    gap: Spacing.two,
-    marginTop: Spacing.one,
-  },
-  footerText: {
-    color: LoginColors.muted,
-    fontFamily: FontFamily.corpo,
-    fontSize: 13,
-    lineHeight: 18,
-  },
-  createLink: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.one,
-  },
-  createLinkText: {
-    color: LoginColors.primary,
-    fontFamily: FontFamily.corpoMedio,
-    fontSize: 13,
-    lineHeight: 18,
-  },
-  errorBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.two,
-    borderRadius: Radius.md,
-    padding: Spacing.three,
-    backgroundColor: '#FFF0F0',
-  },
-  errorText: {
-    flex: 1,
-    color: Brand.perigo,
-    fontFamily: FontFamily.corpoMedio,
-    fontSize: 13,
-    lineHeight: 18,
-  },
+  btnDisabled: { opacity: 0.58 },
+  primaryBtnText: { color: Brand.branco, fontFamily: FontFamily.corpoMedio, fontSize: 16, lineHeight: 22 },
+
+  // Divider + Social
+  dividerRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.three },
+  divider: { flex: 1, height: 1, backgroundColor: C.border },
+  dividerText: { color: '#9AA8BA', fontFamily: FontFamily.corpo, fontSize: 13, lineHeight: 18 },
+  socialRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: Spacing.three },
+  socialBtn: { width: 46, height: 46, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: C.border, borderRadius: Radius.md, backgroundColor: Brand.branco },
+
+  // Footer
+  footerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap', gap: Spacing.two },
+  footerText: { color: C.muted, fontFamily: FontFamily.corpo, fontSize: 13, lineHeight: 18 },
+  createLink: { flexDirection: 'row', alignItems: 'center', gap: Spacing.one },
+  createLinkText: { color: C.primary, fontFamily: FontFamily.corpoMedio, fontSize: 13, lineHeight: 18 },
+
+  // Error
+  errorBox: { flexDirection: 'row', alignItems: 'center', gap: Spacing.two, borderRadius: Radius.md, padding: Spacing.two, backgroundColor: '#FFF0F0' },
+  errorText: { flex: 1, color: Brand.perigo, fontFamily: FontFamily.corpoMedio, fontSize: 13, lineHeight: 18 },
 });

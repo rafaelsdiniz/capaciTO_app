@@ -5,15 +5,24 @@ import { ActivityIndicator, FlatList, Pressable, ScrollView, StyleSheet, View } 
 
 import { ThemedText } from '@/components/themed-text';
 import { AppHeader } from '@/components/ui/app-header';
-import { Card } from '@/components/ui/card';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Input } from '@/components/ui/input';
 import { Screen } from '@/components/ui/screen';
 import { Tag } from '@/components/ui/tag';
-import { Brand, Radius, Spacing, TabBarSpace } from '@/constants/theme';
+import { Brand, FontFamily, Radius, Shadow, Spacing, TabBarSpace } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { api } from '@/lib/api';
 import type { SegmentoEmpresa, VagaComMatch } from '@/lib/api/types';
+
+type IconName = keyof typeof Ionicons.glyphMap;
+
+/** Identidade visual por segmento (emblema do card). */
+const SEG_META: Record<SegmentoEmpresa, { label: string; icon: IconName; cor: string }> = {
+  PESCADO: { label: 'Pescado', icon: 'fish', cor: Brand.teal },
+  LATICINIO: { label: 'Laticínio', icon: 'water', cor: '#3B82C4' },
+  POLPA: { label: 'Polpa', icon: 'leaf', cor: Brand.sucesso },
+  PANIFICACAO: { label: 'Panificação', icon: 'restaurant', cor: Brand.dourado },
+};
 
 const SEGMENTOS: { id: SegmentoEmpresa; label: string }[] = [
   { id: 'PESCADO', label: 'Pescado' },
@@ -72,7 +81,7 @@ export default function VagasScreen() {
 
   return (
     <Screen padded={false}>
-      <AppHeader title="Vagas" subtitle="Oportunidades na indústria de alimentos do TO" />
+      <AppHeader centered title="Vagas" subtitle="Oportunidades na indústria de alimentos do TO" />
 
       <View style={styles.controles}>
         <Input icon="search" placeholder="Buscar por função ou empresa" value={busca} onChangeText={setBusca} />
@@ -134,26 +143,68 @@ function FilterChip({ label, icon, ativo, onPress }: { label: string; icon?: key
 }
 
 function VagaItem({ vaga, onPress }: { vaga: VagaComMatch; onPress: () => void }) {
+  const seg = SEG_META[vaga.segmento];
+  const faltamIds = new Set(vaga.faltam.map((c) => c.id));
+
   return (
-    <Card onPress={onPress}>
-      <View style={styles.row}>
-        <View style={styles.flex}>
-          <ThemedText type="smallBold">{vaga.funcao}</ThemedText>
-          <ThemedText type="small" themeColor="textSecondary">
-            <Ionicons name="business-outline" size={12} /> {vaga.empresaNome} · {vaga.municipio}
-          </ThemedText>
+    <Pressable
+      accessibilityRole="button"
+      onPress={onPress}
+      style={({ pressed }) => [styles.vagaCard, pressed && styles.vagaPressed]}>
+      {/* Acento lateral pela compatibilidade */}
+      <View style={[styles.accent, { backgroundColor: vaga.compativel ? Brand.sucesso : '#D7DEE6' }]} />
+
+      <View style={styles.vagaBody}>
+        <View style={styles.vagaTop}>
+          <View style={[styles.emblema, { backgroundColor: seg.cor }]}>
+            <Ionicons name={seg.icon} size={22} color={Brand.branco} />
+          </View>
+
+          <View style={styles.flex}>
+            <ThemedText type="smallBold" style={styles.vagaFuncao} numberOfLines={1}>
+              {vaga.funcao}
+            </ThemedText>
+            <View style={styles.metaRow}>
+              <Ionicons name="business-outline" size={13} color="#6E7681" />
+              <ThemedText type="small" themeColor="textSecondary" numberOfLines={1} style={styles.flex}>
+                {vaga.empresaNome}
+              </ThemedText>
+            </View>
+            <View style={styles.metaRow}>
+              <Ionicons name="location-outline" size={13} color="#6E7681" />
+              <ThemedText type="small" themeColor="textSecondary">
+                {vaga.municipio} · {seg.label}
+              </ThemedText>
+            </View>
+          </View>
+
+          {vaga.compativel ? (
+            <View style={[styles.matchPill, styles.matchOk]}>
+              <Ionicons name="checkmark-circle" size={14} color={Brand.sucesso} />
+              <ThemedText type="tag" style={{ color: Brand.sucesso }}>
+                Compatível
+              </ThemedText>
+            </View>
+          ) : (
+            <View style={[styles.matchPill, styles.matchWarn]}>
+              <Ionicons name="lock-closed" size={12} color={Brand.perigo} />
+              <ThemedText type="tag" style={{ color: Brand.perigo }}>
+                Faltam {vaga.faltam.length}
+              </ThemedText>
+            </View>
+          )}
         </View>
-        <Ionicons name="chevron-forward" size={20} color={Brand.azulRio} />
+
+        {/* Competências obrigatórias (verde = você tem, vermelho = falta) */}
+        <View style={styles.compsRow}>
+          {vaga.competenciasObrigatorias.map((c) => {
+            const falta = faltamIds.has(c.id);
+            return <Tag key={c.id} label={c.nome} tone={falta ? 'danger' : 'success'} icon={falta ? '🔒' : '✓'} />;
+          })}
+          {vaga.desejaveisAtendidas > 0 ? <Tag label={`+${vaga.desejaveisAtendidas} desejável`} tone="accent" /> : null}
+        </View>
       </View>
-      <View style={styles.tags}>
-        {vaga.compativel ? (
-          <Tag label="Compatível" tone="success" icon="✓" />
-        ) : (
-          <Tag label={`Faltam ${vaga.faltam.length}`} tone="danger" />
-        )}
-        {vaga.desejaveisAtendidas > 0 ? <Tag label={`+${vaga.desejaveisAtendidas} desejável`} tone="accent" /> : null}
-      </View>
-    </Card>
+    </Pressable>
   );
 }
 
@@ -164,7 +215,27 @@ const styles = StyleSheet.create({
   chip: { flexDirection: 'row', alignItems: 'center', gap: 4, borderWidth: 1.5, borderRadius: Radius.pill, paddingHorizontal: Spacing.three, paddingVertical: 8 },
   resumo: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   limpar: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  lista: { paddingHorizontal: Spacing.four, paddingBottom: TabBarSpace, gap: Spacing.two },
-  row: { flexDirection: 'row', alignItems: 'center', gap: Spacing.two },
-  tags: { flexDirection: 'row', gap: Spacing.one, flexWrap: 'wrap' },
+  lista: { paddingHorizontal: Spacing.four, paddingBottom: TabBarSpace, gap: Spacing.three },
+
+  // Card da vaga
+  vagaCard: {
+    flexDirection: 'row',
+    borderRadius: Radius.lg,
+    backgroundColor: Brand.branco,
+    overflow: 'hidden',
+    ...Shadow.card,
+  },
+  vagaPressed: { opacity: 0.96, transform: [{ scale: 0.99 }] },
+  accent: { width: 5 },
+  vagaBody: { flex: 1, padding: Spacing.three, gap: Spacing.two },
+  vagaTop: { flexDirection: 'row', alignItems: 'center', gap: Spacing.three },
+  emblema: { width: 46, height: 46, borderRadius: Radius.md, alignItems: 'center', justifyContent: 'center' },
+  vagaFuncao: { fontFamily: FontFamily.tituloSemi, fontSize: 16, lineHeight: 21 },
+  metaRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 1 },
+
+  matchPill: { flexDirection: 'row', alignItems: 'center', gap: 4, borderRadius: Radius.pill, paddingHorizontal: Spacing.two, paddingVertical: 4 },
+  matchOk: { backgroundColor: '#E4F6EC' },
+  matchWarn: { backgroundColor: '#FDECEC' },
+
+  compsRow: { flexDirection: 'row', gap: Spacing.one, flexWrap: 'wrap' },
 });

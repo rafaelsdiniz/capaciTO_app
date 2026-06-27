@@ -52,7 +52,7 @@ export default function AprenderScreen() {
 
   return (
     <Screen padded={false}>
-      <AppHeader title="Aprender" subtitle="Treinamentos da indústria de pescado" />
+      <AppHeader centered title="Aprender" subtitle="Treinamentos da indústria de pescado" />
 
       <View style={styles.controles}>
         <Input icon="search" placeholder="Buscar treinamento (ex.: câmara fria)" value={busca} onChangeText={setBusca} />

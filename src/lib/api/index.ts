@@ -77,11 +77,19 @@ export { API_BASE_URL } from '@/lib/api/http';
 export const BACKEND_ATIVO = true;
 
 /**
- * Executa a implementação real e, só em caso de servidor inacessível
- * (`status === 0`), cai para o mock. Demais erros (validação, 401, 404…) sobem.
+ * Coerência de sessão: se o LOGIN caiu no mock (backend inacessível), todas as
+ * chamadas seguintes também usam mock — senão o real lança 401 (sem perfil no
+ * auth-store) e a tela quebra. Volta a `false` quando um login real funciona.
+ */
+let sessaoMock = false;
+
+/**
+ * Executa a implementação real e, em caso de servidor inacessível
+ * (`status === 0`) — ou se a sessão atual é mock — cai para o mock.
+ * Demais erros (validação, 401, 404…) sobem.
  */
 async function comFallback<T>(real: () => Promise<T>, mock: () => Promise<T>): Promise<T> {
-  if (!BACKEND_ATIVO) return mock();
+  if (!BACKEND_ATIVO || sessaoMock) return mock();
   try {
     return await real();
   } catch (e) {
@@ -90,13 +98,38 @@ async function comFallback<T>(real: () => Promise<T>, mock: () => Promise<T>): P
   }
 }
 
+/**
+ * Fallback específico do login/registro: marca a sessão como mock quando o
+ * backend está fora (status 0), para o resto do app seguir no mock.
+ */
+async function comFallbackAuth(
+  real: () => Promise<AuthResponse>,
+  mock: () => Promise<AuthResponse>,
+): Promise<AuthResponse> {
+  if (!BACKEND_ATIVO) {
+    sessaoMock = true;
+    return mock();
+  }
+  try {
+    const res = await real();
+    sessaoMock = false;
+    return res;
+  } catch (e) {
+    if ((e as ApiError)?.status === 0) {
+      sessaoMock = true;
+      return mock();
+    }
+    throw e;
+  }
+}
+
 export const api = {
   auth: {
     login(req: LoginRequest): Promise<AuthResponse> {
-      return comFallback(() => loginReal(req), () => loginMock(req));
+      return comFallbackAuth(() => loginReal(req), () => loginMock(req));
     },
     registro(req: RegistroRequest): Promise<AuthResponse> {
-      return comFallback(() => registroReal(req), () => registroMock(req));
+      return comFallbackAuth(() => registroReal(req), () => registroMock(req));
     },
   },
   perfil: {
