@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import { Spacing } from '@/constants/theme';
+import { Brand, Radius, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { useSession } from '@/lib/session/session-context';
 import type { ApiError, Papel } from '@/lib/api/types';
@@ -121,9 +121,9 @@ function PapelOption({ label, ativo, onPress }: { label: string; ativo: boolean;
       onPress={onPress}
       style={[
         styles.papelOption,
-        { borderColor: ativo ? '#208AEF' : theme.backgroundSelected, backgroundColor: ativo ? '#208AEF' : theme.backgroundElement },
+        { borderColor: ativo ? Brand.azulRio : theme.border, backgroundColor: ativo ? Brand.azulRio : theme.backgroundElement },
       ]}>
-      <ThemedText type="smallBold" style={{ color: ativo ? '#ffffff' : theme.text }}>
+      <ThemedText type="smallBold" style={{ color: ativo ? Brand.branco : theme.text }}>
         {label}
       </ThemedText>
     </Pressable>
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
     flex: 1,
     minHeight: 56,
     borderWidth: 2,
-    borderRadius: Spacing.two,
+    borderRadius: Radius.sm,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: Spacing.two,

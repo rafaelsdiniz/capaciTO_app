@@ -10,6 +10,7 @@
 import { createContext, use, useMemo, useState, type ReactNode } from 'react';
 
 import { api } from '@/lib/api';
+import { clearAuth } from '@/lib/api/auth-store';
 import type { LoginRequest, RegistroRequest, Usuario } from '@/lib/api/types';
 
 type SessionState = {
@@ -56,6 +57,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         }
       },
       sair() {
+        clearAuth();
         setUsuario(null);
         setToken(null);
       },

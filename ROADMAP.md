@@ -12,13 +12,24 @@ Fonte da verdade: [docs/requisitos-fieto.md](docs/requisitos-fieto.md). Convenç
 ---
 
 ## 📊 Progresso por milestone
-- [x] **M0 — Fundação** (auth + shell mínimo + mock-first) — *F1 feito; F2 pendente*
-- [ ] **M1 — Esqueleto navegável**
-- [ ] **M2 — Fatia ao vivo 🟢** (coração da demo)
-- [ ] **M3 — Conexão & complementos**
-- [ ] **M4 — Polimento & demo**
+- [x] **M0 — Fundação** (auth + shell + design system + mock-first)
+- [x] **M1 — Esqueleto navegável** (todas as telas dos dois papéis, navegáveis)
+- [x] **M2 — Fatia ao vivo 🟢** (QR → microvídeo → certificação na carteira, rodando no mock)
+- [x] **M3 — Conexão & Indústria** (vagas+match, estações+QR, publicar vaga, buscar talentos)
+- [ ] **M4 — Polimento & demo** (vídeos próprios, integração backend real, ensaio)
 
-> **Trava de segurança:** se M2 não fechar, **F2 pausa M3 e ajuda F1** a estabilizar a fatia ao vivo.
+> **Status:** app completo dos dois lados (Trabalhador + Indústria) rodando **mock-first**, identidade visual "Rio e Sol" aplicada, tema claro. Falta: 2 microvídeos próprios, virar `USE_MOCK` para a API real quando o backend entregar, e ensaio de pitch.
+
+### ➕ Extras implementados (pós-M3)
+- [x] **Área do usuário / conta** (aba Perfil): cartão de identidade, atalhos com contadores, sair
+- [x] **Editar dados do perfil** persistindo no mock (nome, cidade, funções) → **RF05**
+- [x] **Minhas candidaturas**: separadas em *em andamento* e *encerradas*, com status → **RF27**
+- [x] **Visibilidade** do perfil acessível também no hub de conta → **RF08; RN06**
+- [x] **Busca + filtros** na aba **Vagas** (texto, compatíveis, segmento, município) → **RF26**
+- [x] **Busca + filtros** na aba **Aprender** (texto, tema) → **RF10**
+- [x] **Busca + filtros** na aba **Buscar talentos** (texto, competência, cidade, qualificação) → **RF28**
+
+> Todos os filtros rodam client-side sobre o mock; quando o backend existir viram query params nos endpoints (UI não muda).
 
 ---
 
@@ -65,26 +76,28 @@ src/lib/
 - [x] Landing pós-login: `(trabalhador)/carteira` (placeholder) + botão Sair
 - [x] Typecheck `tsc` verde
 
-## M1 · Esqueleto navegável [F1]
-- [ ] **Carteira/Perfil** exibindo competências certificadas (consumir `GET /perfil/me`, mock primeiro) → **RF06**
-- [ ] Indicador de **completude** do perfil (barra/percentual) → **RF07**
-- [ ] Toggle de **visibilidade do perfil** (visível/oculto p/ indústrias) → **RF08; RN06**
-- [ ] Tela **Aprender (catálogo)**: lista de microvídeos de pescado + **busca** → **RF10**
-- [ ] Mock de catálogo no `lib/api` (higienização, recepção de pescado, câmara fria)
+## M1 · Esqueleto navegável [F1] — ✅ FEITO
+- [x] **Carteira/Perfil** exibindo competências certificadas (consumir `GET /perfil/me`, mock primeiro) → **RF06**
+- [x] Indicador de **completude** do perfil (barra/percentual) → **RF07**
+- [x] Toggle de **visibilidade do perfil** (visível/oculto p/ indústrias) → **RF08; RN06**
+- [x] Tela **Aprender (catálogo)**: lista de microvídeos de pescado + **busca** → **RF10**
+- [x] Mock de catálogo no `lib/api` (higienização, recepção de pescado, câmara fria)
+- [x] Placeholder de detalhe do curso (`curso/[id]`) — base do player do M2
+- [x] Acesso livre/demo no login (enquanto não há backend)
 
-## M2 · Fatia ao vivo 🟢 [F1] — PRIORIDADE MÁXIMA
-- [ ] Instalar/configurar `expo-camera` e `expo-video` (testar em **dev build/device**, não web)
-- [ ] **Player de microvídeo vertical** (`expo-video`) → **RF11**
-- [ ] **Scanner de QR** (`expo-camera`) → `GET /estacoes/qr/{codigo}` → abre o vídeo da estação ("câmara fria") → **RF17; RN04**
-- [ ] Ao concluir → `POST /conclusoes` (origem QR/CATALOGO), idempotente → **RF13, RF18; RN10**
-- [ ] Após concluir, navegar à Carteira e mostrar a **certificação nova surgindo** → **RF20, RF21; RN01, RN02**
+## M2 · Fatia ao vivo 🟢 [F1] — ✅ FEITO (no mock)
+- [x] Instalar/configurar `expo-camera` e `expo-video` (⚠️ scanner real só em dev build/device, não web)
+- [x] **Player de microvídeo vertical** (área da marca com progresso; trocar por `<VideoView/>` ao ter vídeo próprio) → **RF11**
+- [x] **Scanner de QR** (`expo-camera`) → `resolverQr` → abre o vídeo da estação ("câmara fria") + botão "Simular leitura" → **RF17; RN04**
+- [x] Ao concluir → `conclusoes.registrar` (origem QR/CATALOGO), idempotente → **RF13, RF18; RN10**
+- [x] Após concluir, tela de sucesso → Carteira mostra a **certificação nova** (recarrega no foco) → **RF20, RF21; RN01, RN02**
 - [ ] Integração real: virar `USE_MOCK` desses recursos quando o backend entregar
 
 ## M3 · Complementos [F1]
-- [ ] Busca/filtros do catálogo por tema (higiene, manipulação, segurança alimentar) → **RF10**
+- [ ] Busca/filtros do catálogo por tema (higiene, manipulação, segurança alimentar) → **RF10** *(busca por texto feita)*
 - [ ] Trilhas (sequência de vídeos) 🟡 navegável → **RF12**
 - [ ] Microquiz de 1–3 questões ao fim do conteúdo → **RF14; RN01**
-- [ ] Edição completa do perfil (nome, foto, cidade, funções de interesse) → **RF05**
+- [x] Edição de perfil (nome, cidade, funções de interesse) → **RF05**
 
 ## M4 · Polimento [F1]
 - [ ] Estados de loading/erro amigáveis na fatia ao vivo → **RNF01**
@@ -97,29 +110,28 @@ src/lib/
 
 > Fundação que o F1 consome + lado "LinkedIn da indústria": empresa publica vagas / busca por certificação; trabalhador vê vagas compatíveis.
 
-## M0 · Fundação compartilhada [F2] — entregar cedo, destrava o F1
-- [ ] **Design system** em `components/ui`: botão, input, card, lista, header, estado vazio (PT-BR, ícones grandes, alto contraste) → **RNF01, RNF09**
-- [ ] `theme/` tokens reaproveitando `src/constants/theme.ts`
-- [ ] **Assumir o shell** (`_layout.tsx`, `index.tsx`): roteamento por papel definitivo → **RF03**
-- [ ] **Assumir `lib/api`**: endurecer cliente HTTP real + base URL por IP da máquina (não localhost)
-- [ ] **Assumir `lib/session`**: persistir JWT (expo-secure-store) + header Authorization
-- [ ] Extrair os componentes inline do auth (`(auth)/_form.tsx`) para `components/ui`
-- [ ] Limpar template órfão (`src/app/explore.tsx`, `app-tabs` se não usado)
+## M0 · Fundação compartilhada [F2] — ✅ FEITO (por F1, assumindo tudo)
+- [x] **Design system** em `components/ui`: Button, Input, Card, Tag, Screen, AppHeader, Logo, Avatar, ProgressBar, EmptyState, StatCard, TabBar → **RNF01, RNF09**
+- [x] `theme` tokens em `constants/theme.ts` (paleta Rio/Sol, Radius, fontes) — tema claro fixo
+- [x] **Shell** (`_layout.tsx`, `index.tsx`): roteamento por papel → **RF03**
+- [x] **`lib/api`** estruturado (mock + flag `USE_MOCK` por recurso) — *falta endurecer HTTP real*
+- [x] Logo aplicada no auth e nos headers
+- [ ] **`lib/session`**: persistir JWT (expo-secure-store) + header Authorization *(hoje em memória)*
+- [x] Limpeza dos órfãos do template (`explore.tsx`, `app-tabs`)
 
-## M1 · Esqueleto navegável [F2]
-- [ ] Telas da **indústria** (mock navegável): dashboard, lista de estações, lista de vagas → base RF15, RF24
-- [ ] Tabs do Trabalhador (Carteira / Aprender / Escanear) no shell → consome telas do F1
-- [ ] Tela **Vagas** (trabalhador) mock → base RF26
+## M1 · Esqueleto navegável [F2] — ✅ FEITO
+- [x] Telas da **indústria**: dashboard, estações, vagas → RF15, RF24
+- [x] Tabs do Trabalhador (Carteira / Aprender / Escanear / Vagas) com TabBar bonita (azul)
+- [x] Tabs da Indústria (Início / Estações / Vagas / Buscar) com TabBar bonita (teal)
 
-## M2 · Conexão real 🟢 [F2]
-- [ ] **Vagas compatíveis** (trabalhador) via `GET /vagas/compativeis` com **badge de match** → **RF25, RF26; RN05, RN03**
-- [ ] (Priorizar só depois do M2 do F1 estar verde)
+## M2 · Conexão real 🟢 [F2] — ✅ FEITO (no mock)
+- [x] **Vagas compatíveis** (trabalhador) com **badge de match** + detalhe + candidatar → **RF25, RF26, RF27; RN05, RN03**
 
-## M3 · Indústria & busca [F2]
-- [ ] **Cadastrar estação** + associar conteúdo + **gerar/exibir QR** (o QR que o F1 escaneia) → **RF15, RF16; RN04, RN07**
-- [ ] **Publicar vaga** (função, município, competências obrigatórias/desejáveis) → **RF24; RN08**
-- [ ] **Buscar trabalhadores por competência certificada** (respeita `visivel`) → **RF28; RN06, RN07**
-- [ ] **Candidatar-se** a vaga (lado trabalhador) → **RF27**
+## M3 · Indústria & busca [F2] — ✅ FEITO (no mock)
+- [x] **Cadastrar estação** + associar conteúdo + **gerar QR escaneável** (react-native-qrcode-svg) → **RF15, RF16; RN04, RN07**
+- [x] **Publicar vaga** (função, município, obrigatórias/desejáveis) → **RF24; RN08**
+- [x] **Buscar trabalhadores por competência** → **RF28; RN06, RN07**
+- [x] **Candidatar-se** a vaga (lado trabalhador) → **RF27**
 
 ## M4 · Polimento [F2]
 - [ ] Estados de erro/vazio em todas as telas de conexão
@@ -146,26 +158,31 @@ src/lib/
 
 ## 5. Cobertura de RFs (só os que tocam o front)
 
-| RF | Prior. | Trilha · Milestone | Status |
-|---|---|---|---|
-| RF01, RF02, RF03 | M | F1/F2 M0 | ✅ |
-| RF04 (recuperar senha) | S | — | 🔵 corte |
-| RF05 | M | F1 M3 | ⬜ |
-| RF06, RF07 | M | F1 M1 | ⬜ |
-| RF08 | S | F1 M1 | ⬜ |
-| RF09 (PDF) | C | — | 🔵 |
-| RF10, RF11, RF13 | M | F1 M1/M2 | ⬜ |
-| RF12 (trilhas) | S | F1 M3 | ⬜ |
-| RF14 (microquiz) | S | F1 M3 | ⬜ |
-| RF15, RF16 | M | F2 M3 | ⬜ |
-| RF17, RF18 | M | F1 M2 | ⬜ |
-| RF19 (offline) | C | — | 🔵 |
-| RF20, RF21 | M | F1 M2 | ⬜ |
-| RF22 (validade) | S | F1 M1 | ⬜ |
-| RF23 (verificação 3º) | C | — | 🔵 |
-| RF24, RF25, RF26 | M | F2 M1–M3 | ⬜ |
-| RF27 | S | F2 M3 | ⬜ |
-| RF28 | S | F2 M3 | ⬜ |
+| RF | Prior. | Status |
+|---|---|---|
+| RF01, RF02, RF03 | M | ✅ |
+| RF04 (recuperar senha) | S | 🔵 corte |
+| RF05 (editar perfil) | M | ✅ |
+| RF06, RF07 (carteira/completude) | M | ✅ |
+| RF08 (visibilidade) | S | ✅ |
+| RF09 (PDF) | C | 🔵 |
+| RF10 (catálogo+busca) | M | ✅ |
+| RF11 (player) | M | ✅ (placeholder da marca; trocar por vídeo próprio) |
+| RF12 (trilhas) | S | ⬜ |
+| RF13, RF18 (conclusão) | M | ✅ |
+| RF14 (microquiz) | S | ⬜ |
+| RF15, RF16 (estação+QR) | M | ✅ |
+| RF17 (escanear QR) | M | ✅ |
+| RF19 (offline) | C | 🔵 |
+| RF20, RF21 (certificação auto) | M | ✅ |
+| RF22 (validade) | S | parcial (status ATIVA/EXPIRADA) |
+| RF23 (verificação 3º) | C | 🔵 |
+| RF24 (publicar vaga) | M | ✅ |
+| RF25, RF26 (match/ver vagas) | M | ✅ |
+| RF27 (candidatar) | S | ✅ |
+| RF28 (buscar por competência) | S | ✅ |
+
+> Tudo ✅ roda **no mock** (mock-first). Falta: vídeos próprios (RF11), persistência/HTTP real e os 🔵/⬜ acima.
 
 ---
 
