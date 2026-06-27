@@ -141,3 +141,6 @@ export const Shadow = {
 
 export const BottomTabInset = Platform.select({ ios: 50, android: 80 }) ?? 0;
 export const MaxContentWidth = 800;
+
+/** Folga inferior das telas para o conteúdo não ficar sob a navbar flutuante. */
+export const TabBarSpace = 120;

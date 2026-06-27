@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { ProgressBar } from '@/components/ui/progress-bar';
 import { Screen } from '@/components/ui/screen';
 import { Tag } from '@/components/ui/tag';
-import { Brand, Radius, Spacing } from '@/constants/theme';
+import { Brand, Radius, Spacing, TabBarSpace } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { api } from '@/lib/api';
 import type { TrabalhadorResumo } from '@/lib/api/types';
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
   chip: { flexDirection: 'row', alignItems: 'center', gap: 4, borderWidth: 1.5, borderRadius: Radius.pill, paddingHorizontal: Spacing.three, paddingVertical: 8 },
   resumo: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   limpar: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  lista: { paddingHorizontal: Spacing.four, paddingBottom: Spacing.six, gap: Spacing.two },
+  lista: { paddingHorizontal: Spacing.four, paddingBottom: TabBarSpace, gap: Spacing.two },
   row: { flexDirection: 'row', gap: Spacing.three },
   tags: { flexDirection: 'row', gap: Spacing.one, flexWrap: 'wrap', marginTop: Spacing.two },
 });

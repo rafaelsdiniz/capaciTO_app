@@ -7,12 +7,11 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CompetenciaBadge } from '@/components/capacitacao/competencia-badge';
 import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
 import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ProgressBar } from '@/components/ui/progress-bar';
-import { Brand, Radius, Spacing } from '@/constants/theme';
+import { Brand, Spacing, TabBarSpace } from '@/constants/theme';
 import { api } from '@/lib/api';
 import type { PerfilMe } from '@/lib/api/types';
 import { useSession } from '@/lib/session/session-context';
@@ -58,14 +57,18 @@ export default function CarteiraScreen() {
   const certs = perfil?.certificacoes ?? [];
 
   return (
-    <ThemedView style={styles.flex}>
+    <View style={styles.flex}>
+      {/* Foto de fundo em tela cheia (atrás de tudo, inclusive da navbar) */}
+      <ImageBackground source={require('@/assets/images/hero.jpg')} resizeMode="cover" style={StyleSheet.absoluteFill}>
+        <LinearGradient
+          colors={['rgba(10,54,89,0.45)', 'rgba(10,54,89,0.25)', 'rgba(10,54,89,0.55)']}
+          style={StyleSheet.absoluteFill}
+        />
+      </ImageBackground>
+
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-        {/* HERO */}
-        <ImageBackground
-          source={require('@/assets/images/hero.jpg')}
-          resizeMode="cover"
-          style={styles.hero}
-          imageStyle={styles.heroImg}>
+        {/* HERO (conteúdo sobre a foto) */}
+        <View style={styles.hero}>
 
           <LinearGradient
             colors={['rgba(10,54,89,0.20)', 'rgba(10,54,89,0.55)', 'rgba(10,54,89,0.92)']}
@@ -105,7 +108,7 @@ export default function CarteiraScreen() {
               </View>
             ) : null}
           </View>
-        </ImageBackground>
+        </View>
 
         {/* CONTEÚDO */}
         <View style={styles.body}>
@@ -156,16 +159,15 @@ export default function CarteiraScreen() {
           ) : null}
         </View>
       </ScrollView>
-    </ThemedView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  scroll: { paddingBottom: Spacing.six * 2 },
+  scroll: { paddingBottom: TabBarSpace },
 
   hero: { width: '100%', height: 320 },
-  heroImg: { borderBottomLeftRadius: Radius.xl, borderBottomRightRadius: Radius.xl, resizeMode: 'cover' },
   heroContent: { flex: 1, paddingHorizontal: Spacing.four, paddingBottom: Spacing.four },
   heroTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   brand: { color: '#FFFFFF', fontSize: 20, fontFamily: 'Nunito_700Bold' },

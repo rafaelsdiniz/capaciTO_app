@@ -3,7 +3,7 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView, type Edge } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/themed-view';
-import { Spacing } from '@/constants/theme';
+import { Spacing, TabBarSpace } from '@/constants/theme';
 
 /**
  * Wrapper padrão de tela: fundo Cinza Escama, safe area e padding consistentes.
@@ -25,7 +25,7 @@ export function Screen({
     <ThemedView style={styles.flex}>
       <SafeAreaView style={styles.flex} edges={edges}>
         {scroll ? (
-          <ScrollView contentContainerStyle={[styles.scroll, inner]} keyboardShouldPersistTaps="handled">
+          <ScrollView contentContainerStyle={[styles.scroll, inner, styles.scrollBottom]} keyboardShouldPersistTaps="handled">
             {children}
           </ScrollView>
         ) : (
@@ -40,4 +40,5 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   padded: { padding: Spacing.four },
   scroll: { flexGrow: 1, gap: Spacing.four },
+  scrollBottom: { paddingBottom: TabBarSpace },
 });

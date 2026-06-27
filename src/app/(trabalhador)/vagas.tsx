@@ -10,7 +10,7 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { Input } from '@/components/ui/input';
 import { Screen } from '@/components/ui/screen';
 import { Tag } from '@/components/ui/tag';
-import { Brand, Radius, Spacing } from '@/constants/theme';
+import { Brand, Radius, Spacing, TabBarSpace } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { api } from '@/lib/api';
 import type { SegmentoEmpresa, VagaComMatch } from '@/lib/api/types';
@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
   chip: { flexDirection: 'row', alignItems: 'center', gap: 4, borderWidth: 1.5, borderRadius: Radius.pill, paddingHorizontal: Spacing.three, paddingVertical: 8 },
   resumo: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   limpar: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  lista: { paddingHorizontal: Spacing.four, paddingBottom: Spacing.six, gap: Spacing.two },
+  lista: { paddingHorizontal: Spacing.four, paddingBottom: TabBarSpace, gap: Spacing.two },
   row: { flexDirection: 'row', alignItems: 'center', gap: Spacing.two },
   tags: { flexDirection: 'row', gap: Spacing.one, flexWrap: 'wrap' },
 });
