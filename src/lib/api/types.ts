@@ -50,3 +50,134 @@ export type ApiError = {
   code?: string;
   message: string;
 };
+
+// --- Perfil / Carteira / Aprendizagem (spec §8) ---
+
+/** Competência do catálogo da cadeia de alimentos. */
+export type Competencia = {
+  id: string;
+  nome: string;
+  descricao?: string;
+};
+
+export type StatusCertificacao = 'ATIVA' | 'EXPIRADA';
+
+/** Certificação emitida ao trabalhador (RF20–RF22; RN02, RN03). */
+export type Certificacao = {
+  id: string;
+  competencia: Competencia;
+  dataEmissao: string; // ISO
+  dataValidade?: string; // ISO; ausente = sem validade
+  status: StatusCertificacao;
+};
+
+/** Resposta de GET /api/v1/perfil/me (RF05–RF08). */
+export type PerfilMe = {
+  usuario: Usuario;
+  cidade?: string;
+  funcoesInteresse: string[];
+  /** Visibilidade para indústrias (RF08; RN06). */
+  visivel: boolean;
+  /** Indicador de completude/qualificação 0–100 (RF07). */
+  completude: number;
+  /** Competências certificadas exibidas na carteira (RF06). */
+  certificacoes: Certificacao[];
+};
+
+export type SegmentoEmpresa = 'PESCADO' | 'LATICINIO' | 'POLPA' | 'PANIFICACAO';
+
+export type Empresa = {
+  id: string;
+  nome: string;
+  segmento: SegmentoEmpresa;
+  municipio: string;
+};
+
+/** Indicadores do painel da indústria. */
+export type EmpresaDashboard = {
+  empresa: Empresa;
+  totalEstacoes: number;
+  totalVagas: number;
+  totalCandidatos: number;
+};
+
+export type TipoConteudo = 'MICROVIDEO' | 'TRILHA';
+
+/** Item do catálogo de aprendizagem (RF10–RF12). */
+export type Conteudo = {
+  id: string;
+  titulo: string;
+  tipo: TipoConteudo;
+  /** Competência que este conteúdo certifica ao concluir. */
+  competencia: Competencia;
+  /** Duração em segundos (microvídeo curto/vertical). */
+  duracao: number;
+  urlVideo?: string;
+  /** Tema para busca/filtro (higiene, manipulação, segurança, boas práticas). */
+  tema: string;
+};
+
+// --- Estações / QR (spec §8; RF15–RF18) ---
+
+export type Estacao = {
+  id: string;
+  nome: string;
+  empresaNome: string;
+  conteudo: Conteudo;
+  /** Código único do QR da estação (RF16; RN04). */
+  codigoQr: string;
+};
+
+export type OrigemConclusao = 'CATALOGO' | 'QR' | 'ESTACAO';
+
+/** Resultado de registrar uma conclusão (RF13/RF18) — pode emitir certificação. */
+export type ResultadoConclusao = {
+  /** Certificação recém-emitida, se a conclusão gerou uma nova (RF20/RF21). */
+  certificacao?: Certificacao;
+  /** true se já estava certificada antes (RN10 — não duplica). */
+  jaCertificada: boolean;
+};
+
+// --- Vagas / Candidaturas (spec §8; RF24–RF28) ---
+
+export type StatusVaga = 'ABERTA' | 'FECHADA';
+
+export type Vaga = {
+  id: string;
+  funcao: string;
+  municipio: string;
+  empresaNome: string;
+  segmento: SegmentoEmpresa;
+  descricao?: string;
+  competenciasObrigatorias: Competencia[];
+  competenciasDesejaveis: Competencia[];
+  status: StatusVaga;
+};
+
+/** Vaga na visão do trabalhador, com cálculo de match (RN05). */
+export type VagaComMatch = Vaga & {
+  /** Possui TODAS as obrigatórias certificadas e ATIVAS. */
+  compativel: boolean;
+  /** Competências obrigatórias que ainda faltam. */
+  faltam: Competencia[];
+  /** Quantas desejáveis o trabalhador já tem (ordena melhor). */
+  desejaveisAtendidas: number;
+};
+
+export type StatusCandidatura = 'ENVIADA' | 'EM_ANALISE' | 'APROVADA';
+
+export type Candidatura = {
+  id: string;
+  vaga: Vaga;
+  data: string;
+  status: StatusCandidatura;
+};
+
+/** Trabalhador na busca da indústria (RF28) — respeita visibilidade (RN06). */
+export type TrabalhadorResumo = {
+  id: string;
+  nome: string;
+  cidade: string;
+  completude: number;
+  competencias: string[];
+};

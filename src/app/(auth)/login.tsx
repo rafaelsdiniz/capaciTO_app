@@ -1,6 +1,6 @@
 import { Link, useRouter } from 'expo-router';
 import { useState } from 'react';
-import { View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { useSession } from '@/lib/session/session-context';
@@ -31,6 +31,17 @@ export default function LoginScreen() {
     }
   }
 
+  // Acesso livre/demo: entra com o trabalhador de exemplo do mock, sem credenciais.
+  async function aoEntrarDemo() {
+    setErro(null);
+    try {
+      await entrar({ identificador: 'maria@trab.com', senha: '123456' });
+      router.replace('/');
+    } catch (e) {
+      setErro((e as ApiError)?.message ?? 'Não foi possível entrar. Tente novamente.');
+    }
+  }
+
   return (
     <AuthScreen titulo="Entrar" subtitulo="Acesse sua Carteira de Qualificação Digital">
       <ErroMsg texto={erro} />
@@ -51,6 +62,13 @@ export default function LoginScreen() {
       />
       <PrimaryButton titulo="Entrar" onPress={aoEntrar} carregando={carregando} />
 
+      {/* Acesso livre enquanto não há backend (mock-first). F2 remove ao integrar a API real. */}
+      <Pressable accessibilityRole="button" onPress={aoEntrarDemo} disabled={carregando} style={styles.demo}>
+        <ThemedText type="smallBold" themeColor="text">
+          Entrar como demonstração (Trabalhador)
+        </ThemedText>
+      </Pressable>
+
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4 }}>
         <ThemedText type="small" themeColor="textSecondary">
           Não tem conta?
@@ -64,3 +82,7 @@ export default function LoginScreen() {
     </AuthScreen>
   );
 }
+
+const styles = StyleSheet.create({
+  demo: { alignItems: 'center', paddingVertical: 12 },
+});
