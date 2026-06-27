@@ -7,7 +7,6 @@ import {
 import { DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import { useFonts } from 'expo-font';
 
-import { AnimatedSplashOverlay } from '@/components/animated-icon';
 import { SessionProvider } from '@/lib/session/session-context';
 
 // Shell raiz do app. Tema claro fixo (identidade light-first).
@@ -28,7 +27,6 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={DefaultTheme}>
       <SessionProvider>
-        <AnimatedSplashOverlay />
         <Stack screenOptions={{ headerShown: false }} />
       </SessionProvider>
     </ThemeProvider>
