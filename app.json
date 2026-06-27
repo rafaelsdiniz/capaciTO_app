@@ -41,7 +41,8 @@
         {
           "cameraPermission": "O CapaciTO usa a câmera para ler o QR Code das estações de trabalho."
         }
-      ]
+      ],
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true,

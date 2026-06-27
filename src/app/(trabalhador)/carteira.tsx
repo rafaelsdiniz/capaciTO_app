@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect, useRouter } from 'expo-router';
-import { useCallback, useState } from 'react';
+import { useCallback, useState, type ComponentProps } from 'react';
 import { ActivityIndicator, ImageBackground, Pressable, ScrollView, StyleSheet, Switch, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -101,10 +101,17 @@ export default function CarteiraScreen() {
 
             {perfil ? (
               <View style={styles.heroStats}>
-                <ProgressBar value={perfil.completude} color={Brand.dourado} />
-                <ThemedText style={styles.heroStatsText}>
-                  {perfil.completude}% qualificado · {certs.length} {certs.length === 1 ? 'certificado' : 'certificados'}
-                </ThemedText>
+                <ThemedText style={styles.heroCarteira}>Carteira de Qualificação Digital</ThemedText>
+                {certs.length > 0 ? (
+                  <>
+                    <ProgressBar value={perfil.completude} color={Brand.dourado} />
+                    <ThemedText style={styles.heroStatsText}>
+                      {perfil.completude}% qualificado · {certs.length} {certs.length === 1 ? 'certificado' : 'certificados'}
+                    </ThemedText>
+                  </>
+                ) : (
+                  <ThemedText style={styles.heroStatsText}>Pronta para o seu primeiro certificado 🐟</ThemedText>
+                )}
               </View>
             ) : null}
           </View>
@@ -116,49 +123,86 @@ export default function CarteiraScreen() {
             <ActivityIndicator color={Brand.azulRio} style={{ marginTop: Spacing.four }} />
           ) : perfil ? (
             <>
-              <Card style={styles.rowBetween}>
-                <View style={styles.flex}>
-                  <ThemedText type="smallBold">Visível para indústrias</ThemedText>
-                  <ThemedText type="small" themeColor="textSecondary">
-                    {visivel ? 'As empresas podem te encontrar.' : 'Seu perfil está oculto.'}
-                  </ThemedText>
-                </View>
-                <Switch value={visivel} onValueChange={alternarVisibilidade} trackColor={{ true: Brand.teal }} />
-              </Card>
-
-              <View style={styles.secaoHeader}>
-                <ThemedText type="smallBold">Competências certificadas ({certs.length})</ThemedText>
-                {certs.length > 0 ? (
-                  <Pressable onPress={() => router.push('/certificados')} hitSlop={6}>
-                    <ThemedText type="link" style={{ color: Brand.azulRio }}>
-                      Ver todas
-                    </ThemedText>
-                  </Pressable>
-                ) : null}
-              </View>
-
               {certs.length === 0 ? (
-                <Card>
-                  <ThemedText type="small" themeColor="textSecondary">
-                    Você ainda não tem certificações. Toque no botão do QR ou busque um treinamento para começar.
-                  </ThemedText>
-                </Card>
-              ) : (
-                <View style={styles.lista}>
-                  {certs.slice(0, 3).map((c) => (
-                    <CompetenciaBadge key={c.id} certificacao={c} />
-                  ))}
-                </View>
-              )}
+                <>
+                  {/* Estado inicial: acolhe e mostra o caminho até o 1º certificado */}
+                  <Card style={styles.comecar}>
+                    <ThemedText type="smallBold">Como funciona sua carteira</ThemedText>
+                    <ThemedText type="small" themeColor="textSecondary">
+                      Cada treino que você conclui vira um certificado aqui — e é com ele que as indústrias de alimentos do Tocantins te encontram.
+                    </ThemedText>
+                    <View style={styles.passos}>
+                      <Passo n={1} icon="qr-code" texto="Escaneie o QR na estação ou escolha um treinamento" />
+                      <Passo n={2} icon="play-circle" texto="Assista ao microvídeo — leva menos de 2 minutos" />
+                      <Passo n={3} icon="ribbon" texto="Ganhe o certificado e apareça para as empresas" />
+                    </View>
+                  </Card>
 
-              <View style={styles.ctas}>
-                <Button title="Escanear QR da estação" icon="qr-code" onPress={() => router.push('/escanear')} />
-                <Button title="Buscar treinamentos" icon="school" variant="outline" onPress={() => router.push('/aprender')} />
-              </View>
+                  <View style={styles.ctas}>
+                    <Button title="Escanear QR da estação" icon="qr-code" onPress={() => router.push('/escanear')} />
+                    <Button title="Ver treinamentos" icon="school" variant="outline" onPress={() => router.push('/aprender')} />
+                  </View>
+                </>
+              ) : (
+                <>
+                  <View style={styles.secaoHeader}>
+                    <ThemedText type="smallBold">Competências certificadas ({certs.length})</ThemedText>
+                    <Pressable onPress={() => router.push('/certificados')} hitSlop={6}>
+                      <ThemedText type="link" style={{ color: Brand.azulRio }}>
+                        Ver todas
+                      </ThemedText>
+                    </Pressable>
+                  </View>
+
+                  <View style={styles.lista}>
+                    {certs.slice(0, 3).map((c) => (
+                      <CompetenciaBadge key={c.id} certificacao={c} />
+                    ))}
+                  </View>
+
+                  <View style={styles.ctas}>
+                    <Button title="Escanear QR da estação" icon="qr-code" onPress={() => router.push('/escanear')} />
+                    <Button title="Ver treinamentos" icon="school" variant="outline" onPress={() => router.push('/aprender')} />
+                  </View>
+
+                  <Card style={styles.rowBetween}>
+                    <View style={styles.flex}>
+                      <ThemedText type="smallBold">Visível para indústrias</ThemedText>
+                      <ThemedText type="small" themeColor="textSecondary">
+                        {visivel ? 'As empresas podem te encontrar.' : 'Seu perfil está oculto.'}
+                      </ThemedText>
+                    </View>
+                    <Switch value={visivel} onValueChange={alternarVisibilidade} trackColor={{ true: Brand.teal }} />
+                  </Card>
+                </>
+              )}
             </>
           ) : null}
         </View>
       </ScrollView>
+    </View>
+  );
+}
+
+/** Passo numerado do guia "como funciona" (estado inicial da carteira). */
+function Passo({
+  n,
+  icon,
+  texto,
+}: {
+  n: number;
+  icon: ComponentProps<typeof Ionicons>['name'];
+  texto: string;
+}) {
+  return (
+    <View style={styles.passo}>
+      <View style={styles.passoNum}>
+        <ThemedText style={styles.passoNumTxt}>{n}</ThemedText>
+      </View>
+      <Ionicons name={icon} size={20} color={Brand.azulRio} />
+      <ThemedText type="small" style={styles.flex}>
+        {texto}
+      </ThemedText>
     </View>
   );
 }
@@ -177,7 +221,14 @@ const styles = StyleSheet.create({
   heroHello: { color: 'rgba(255,255,255,0.85)', fontFamily: 'Nunito_500Medium', fontSize: 14 },
   heroName: { color: '#FFFFFF', fontFamily: 'Nunito_700Bold', fontSize: 24, lineHeight: 30 },
   heroStats: { marginTop: Spacing.three, gap: Spacing.one },
+  heroCarteira: { color: Brand.dourado, fontFamily: 'Nunito_700Bold', fontSize: 13, letterSpacing: 0.5 },
   heroStatsText: { color: '#FFFFFF', fontFamily: 'Nunito_600SemiBold', fontSize: 13 },
+
+  comecar: { gap: Spacing.two },
+  passos: { gap: Spacing.three, marginTop: Spacing.one },
+  passo: { flexDirection: 'row', alignItems: 'center', gap: Spacing.two },
+  passoNum: { width: 24, height: 24, borderRadius: 12, backgroundColor: Brand.azulRio, alignItems: 'center', justifyContent: 'center' },
+  passoNumTxt: { color: '#FFFFFF', fontFamily: 'Nunito_700Bold', fontSize: 13 },
 
   body: { paddingHorizontal: Spacing.four, paddingTop: Spacing.four, gap: Spacing.three },
   rowBetween: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: Spacing.three },
