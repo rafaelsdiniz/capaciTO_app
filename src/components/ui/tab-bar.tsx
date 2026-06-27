@@ -109,7 +109,7 @@ function CenterFab({ center }: { center: Center }) {
   const scale = press.interpolate({ inputRange: [0, 1], outputRange: [1, 0.9] });
 
   return (
-    <Animated.View style={{ transform: [{ translateY: -(FAB / 2) }, { scale }] }}>
+    <Animated.View style={{ transform: [{ scale }] }}>
       <Pressable
         accessibilityRole="button"
         accessibilityLabel="Ação principal"
@@ -117,16 +117,16 @@ function CenterFab({ center }: { center: Center }) {
         onPressOut={() => animar(0)}
         onPress={center.onPress}
         style={[styles.fab, { backgroundColor: center.color }]}>
-        <Ionicons name={center.icon} size={28} color={Brand.branco} />
+        <Ionicons name={center.icon} size={26} color={Brand.branco} />
       </Pressable>
     </Animated.View>
   );
 }
 
-const FAB = 62;
+const FAB = 52;
 
 const styles = StyleSheet.create({
-  host: { paddingHorizontal: Spacing.four, paddingTop: FAB / 2, backgroundColor: 'transparent' },
+  host: { paddingHorizontal: Spacing.four, paddingTop: Spacing.two, backgroundColor: 'transparent' },
   bar: {
     flexDirection: 'row',
     alignItems: 'center',
