@@ -20,6 +20,17 @@ Fonte da verdade: [docs/requisitos-fieto.md](docs/requisitos-fieto.md). Convenç
 
 > **Status:** app completo dos dois lados (Trabalhador + Indústria) rodando **mock-first**, identidade visual "Rio e Sol" aplicada, tema claro. Falta: 2 microvídeos próprios, virar `USE_MOCK` para a API real quando o backend entregar, e ensaio de pitch.
 
+### ➕ Extras implementados (pós-M3)
+- [x] **Área do usuário / conta** (aba Perfil): cartão de identidade, atalhos com contadores, sair
+- [x] **Editar dados do perfil** persistindo no mock (nome, cidade, funções) → **RF05**
+- [x] **Minhas candidaturas**: separadas em *em andamento* e *encerradas*, com status → **RF27**
+- [x] **Visibilidade** do perfil acessível também no hub de conta → **RF08; RN06**
+- [x] **Busca + filtros** na aba **Vagas** (texto, compatíveis, segmento, município) → **RF26**
+- [x] **Busca + filtros** na aba **Aprender** (texto, tema) → **RF10**
+- [x] **Busca + filtros** na aba **Buscar talentos** (texto, competência, cidade, qualificação) → **RF28**
+
+> Todos os filtros rodam client-side sobre o mock; quando o backend existir viram query params nos endpoints (UI não muda).
+
 ---
 
 ## 1. Regras de convivência (não colidir no mesmo repo)
