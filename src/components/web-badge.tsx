@@ -1,4 +1,4 @@
-import { version } from 'expo/package.json';
+import Constants from 'expo-constants';
 import { Image } from 'expo-image';
 import { useColorScheme, StyleSheet } from 'react-native';
 
@@ -9,6 +9,7 @@ import { Spacing } from '@/constants/theme';
 
 export function WebBadge() {
   const scheme = useColorScheme();
+  const version = Constants.expoConfig?.version ?? '1.0.0';
 
   return (
     <ThemedView style={styles.container}>
