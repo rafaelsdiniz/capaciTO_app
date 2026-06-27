@@ -6,9 +6,11 @@
  * `${API_BASE_URL}/...`. Mantenha a assinatura idêntica para não quebrar a UI.
  */
 import {
+  atualizarPerfilMock,
   buscarTrabalhadoresMock,
   candidatarMock,
   criarEstacaoMock,
+  definirVisibilidadeMock,
   empresaDashboardMock,
   listarCompetenciasMock,
   listarConteudosMock,
@@ -74,6 +76,12 @@ export const api = {
   perfil: {
     me(): Promise<PerfilMe> {
       return perfilMeMock();
+    },
+    atualizar(dados: { nome?: string; cidade?: string; funcoesInteresse?: string[] }): Promise<PerfilMe> {
+      return atualizarPerfilMock(dados);
+    },
+    visibilidade(visivel: boolean): Promise<{ visivel: boolean }> {
+      return definirVisibilidadeMock(visivel);
     },
   },
   conteudos: {

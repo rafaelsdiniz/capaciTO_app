@@ -141,18 +141,44 @@ export async function obterConteudoMock(id: string): Promise<Conteudo> {
   return delay(c, 200);
 }
 
+/** Estado mutável do perfil do trabalhador demo (editável em perfil-editar). */
+const perfilState = {
+  cidade: 'Palmas',
+  funcoesInteresse: ['Manipulador de pescado'] as string[],
+  visivel: true,
+};
+
 export async function perfilMeMock(): Promise<PerfilMe> {
   const usuario = usuariosMock.find((u) => u.papel === 'TRABALHADOR')!;
   const { senha: _omit, ...usuarioPublico } = usuario;
   const perfil: PerfilMe = {
     usuario: usuarioPublico,
-    cidade: 'Palmas',
-    funcoesInteresse: ['Manipulador de pescado'],
-    visivel: true,
+    cidade: perfilState.cidade,
+    funcoesInteresse: perfilState.funcoesInteresse,
+    visivel: perfilState.visivel,
     completude: calcularCompletude(certificacoesMock.length),
     certificacoes: [...certificacoesMock],
   };
   return delay(perfil, 300);
+}
+
+/** Atualiza dados do perfil (RF05). */
+export async function atualizarPerfilMock(dados: {
+  nome?: string;
+  cidade?: string;
+  funcoesInteresse?: string[];
+}): Promise<PerfilMe> {
+  const usuario = usuariosMock.find((u) => u.papel === 'TRABALHADOR')!;
+  if (dados.nome?.trim()) usuario.nome = dados.nome.trim();
+  if (dados.cidade !== undefined) perfilState.cidade = dados.cidade.trim();
+  if (dados.funcoesInteresse) perfilState.funcoesInteresse = dados.funcoesInteresse.filter(Boolean);
+  return perfilMeMock();
+}
+
+/** Liga/desliga a visibilidade do perfil para as indústrias (RF08; RN06). */
+export async function definirVisibilidadeMock(visivel: boolean): Promise<{ visivel: boolean }> {
+  perfilState.visivel = visivel;
+  return delay({ visivel }, 150);
 }
 
 /** Completude simples (RF07): base de perfil + peso por certificação ativa, teto 100. */
@@ -271,9 +297,24 @@ const vagasMock: Vaga[] = [
     competenciasDesejaveis: [COMPETENCIAS.bpf],
     status: 'ABERTA',
   },
+  {
+    id: 'vaga-4',
+    funcao: 'Operador de filetagem',
+    municipio: 'Palmas',
+    empresaNome: 'Frigorífico Pescado TO',
+    segmento: 'PESCADO',
+    descricao: 'Processo de filetagem e cortes do pescado. (Processo seletivo encerrado.)',
+    competenciasObrigatorias: [COMPETENCIAS.recepcaoPescado],
+    competenciasDesejaveis: [],
+    status: 'FECHADA',
+  },
 ];
 
-const candidaturasMock: Candidatura[] = [];
+// Candidaturas do trabalhador demo — uma em andamento e uma encerrada.
+const candidaturasMock: Candidatura[] = [
+  { id: 'cand-seed-1', vaga: vagasMock[0], data: '2026-06-20', status: 'EM_ANALISE' },
+  { id: 'cand-seed-2', vaga: vagasMock[3], data: '2026-05-02', status: 'ENVIADA' },
+];
 
 function competenciasAtivasIds(): Set<string> {
   return new Set(certificacoesMock.filter((c) => c.status === 'ATIVA').map((c) => c.competencia.id));
