@@ -61,7 +61,12 @@ export default function CarteiraScreen() {
     <ThemedView style={styles.flex}>
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         {/* HERO */}
-        <ImageBackground source={require('@/assets/images/hero.jpg')} style={styles.hero} imageStyle={styles.heroImg}>
+        <ImageBackground
+          source={require('@/assets/images/hero.jpg')}
+          resizeMode="cover"
+          style={styles.hero}
+          imageStyle={styles.heroImg}>
+
           <LinearGradient
             colors={['rgba(10,54,89,0.20)', 'rgba(10,54,89,0.55)', 'rgba(10,54,89,0.92)']}
             style={StyleSheet.absoluteFill}
@@ -159,9 +164,9 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   scroll: { paddingBottom: Spacing.six * 2 },
 
-  hero: { width: '100%', minHeight: 280 },
-  heroImg: { borderBottomLeftRadius: Radius.xl, borderBottomRightRadius: Radius.xl },
-  heroContent: { flex: 1, paddingHorizontal: Spacing.four, paddingBottom: Spacing.four, minHeight: 280 },
+  hero: { width: '100%', height: 320 },
+  heroImg: { borderBottomLeftRadius: Radius.xl, borderBottomRightRadius: Radius.xl, resizeMode: 'cover' },
+  heroContent: { flex: 1, paddingHorizontal: Spacing.four, paddingBottom: Spacing.four },
   heroTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   brand: { color: '#FFFFFF', fontSize: 20, fontFamily: 'Nunito_700Bold' },
   brandTo: { color: Brand.dourado },
