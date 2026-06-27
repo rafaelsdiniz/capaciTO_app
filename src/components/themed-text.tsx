@@ -1,10 +1,10 @@
-import { Platform, StyleSheet, Text, type TextProps } from 'react-native';
+import { StyleSheet, Text, type TextProps } from 'react-native';
 
-import { Fonts, ThemeColor } from '@/constants/theme';
+import { FontFamily, Fonts, ThemeColor } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
 export type ThemedTextProps = TextProps & {
-  type?: 'default' | 'title' | 'small' | 'smallBold' | 'subtitle' | 'link' | 'linkPrimary' | 'code';
+  type?: 'default' | 'title' | 'small' | 'smallBold' | 'subtitle' | 'link' | 'linkPrimary' | 'code' | 'tag';
   themeColor?: ThemeColor;
 };
 
@@ -23,6 +23,7 @@ export function ThemedText({ style, type = 'default', themeColor, ...rest }: The
         type === 'link' && styles.link,
         type === 'linkPrimary' && styles.linkPrimary,
         type === 'code' && styles.code,
+        type === 'tag' && styles.tag,
         style,
       ]}
       {...rest}
@@ -31,43 +32,53 @@ export function ThemedText({ style, type = 'default', themeColor, ...rest }: The
 }
 
 const styles = StyleSheet.create({
+  // Corpo / mensagens → Inter (legibilidade em telas)
   small: {
+    fontFamily: FontFamily.corpo,
     fontSize: 14,
     lineHeight: 20,
-    fontWeight: 500,
   },
   smallBold: {
+    fontFamily: FontFamily.corpoMedio,
     fontSize: 14,
     lineHeight: 20,
-    fontWeight: 700,
   },
   default: {
+    fontFamily: FontFamily.corpo,
     fontSize: 16,
     lineHeight: 24,
-    fontWeight: 500,
   },
+  // Títulos / chamadas → Montserrat (autoridade)
   title: {
-    fontSize: 48,
-    fontWeight: 600,
-    lineHeight: 52,
+    fontFamily: FontFamily.tituloBold,
+    fontSize: 40,
+    lineHeight: 46,
   },
   subtitle: {
-    fontSize: 32,
-    lineHeight: 44,
-    fontWeight: 600,
+    fontFamily: FontFamily.tituloSemi,
+    fontSize: 28,
+    lineHeight: 36,
   },
   link: {
+    fontFamily: FontFamily.corpoMedio,
     lineHeight: 30,
     fontSize: 14,
   },
   linkPrimary: {
+    fontFamily: FontFamily.corpoMedio,
     lineHeight: 30,
     fontSize: 14,
-    color: '#3c87f7',
+    color: '#0A3659',
   },
   code: {
     fontFamily: Fonts.mono,
-    fontWeight: Platform.select({ android: 700 }) ?? 500,
     fontSize: 12,
+  },
+  // Tags / dados técnicos / crachás → Barlow (aspecto técnico-industrial)
+  tag: {
+    fontFamily: FontFamily.tag,
+    fontSize: 13,
+    lineHeight: 18,
+    letterSpacing: 0.3,
   },
 });
