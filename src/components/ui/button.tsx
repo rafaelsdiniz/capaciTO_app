@@ -4,6 +4,7 @@ import { ActivityIndicator, Pressable, StyleSheet, View, type StyleProp, type Vi
 import { ThemedText } from '@/components/themed-text';
 import { Brand, FontFamily, Radius, Spacing } from '@/constants/theme';
 
+
 export type IconName = keyof typeof Ionicons.glyphMap;
 type Variant = 'primary' | 'secondary' | 'accent' | 'outline' | 'ghost';
 type Size = 'md' | 'lg';
@@ -52,7 +53,7 @@ export function Button({
         size === 'lg' ? styles.lg : styles.md,
         { backgroundColor: v.bg, borderColor: v.border, borderWidth: v.border ? 1.5 : 0 },
         full && styles.full,
-        { opacity: bloqueado ? 0.5 : pressed ? 0.88 : 1 },
+        { opacity: bloqueado ? 0.5 : 1, transform: [{ scale: pressed && !bloqueado ? 0.98 : 1 }] },
         style,
       ]}>
       {loading ? (
@@ -77,9 +78,9 @@ const VARIANTS: Record<Variant, { bg: string; fg: string; border?: string }> = {
 };
 
 const styles = StyleSheet.create({
-  base: { borderRadius: Radius.sm, alignItems: 'center', justifyContent: 'center', paddingHorizontal: Spacing.four },
+  base: { borderRadius: Radius.md, alignItems: 'center', justifyContent: 'center', paddingHorizontal: Spacing.four },
   md: { minHeight: 50 },
-  lg: { minHeight: 58 },
+  lg: { minHeight: 54 },
   full: { alignSelf: 'stretch' },
   content: { flexDirection: 'row', alignItems: 'center', gap: Spacing.two },
   label: { fontFamily: FontFamily.corpoMedio, fontSize: 16 },

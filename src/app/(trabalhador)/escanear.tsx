@@ -44,7 +44,7 @@ export default function EscanearScreen() {
 
   return (
     <Screen padded={false}>
-      <AppHeader title="Escanear estação" subtitle="Aponte para o QR da sua estação" />
+      <AppHeader back title="Escanear estação" />
 
       <View style={styles.body}>
         <View style={styles.cameraBox}>
