@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { useEffect, useRef } from 'react';
+import { Animated, Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
@@ -23,9 +24,8 @@ type TabBarProps = {
 };
 
 /**
- * Tab bar estilo iOS: barra branca flutuante com cantos arredondados, hairline
- * e sombra; itens com ícone + label pequeno; botão central circular elevado
- * (FAB) para a ação principal (Escanear no trabalhador, + na indústria).
+ * Tab bar estilo iOS: barra branca flutuante (cantos arredondados, sombra) com
+ * botão central elevado (FAB). O ícone do item ativo sobe levemente (mola).
  */
 export function TabBar({ state, descriptors, navigation, icons, activeColor = Brand.azulRio, center }: TabBarProps) {
   const theme = useTheme();
@@ -33,11 +33,8 @@ export function TabBar({ state, descriptors, navigation, icons, activeColor = Br
 
   const tabRoutes = state.routes.filter((r) => icons[r.name]);
   const meio = Math.ceil(tabRoutes.length / 2);
-  const esquerda = tabRoutes.slice(0, meio);
-  const direita = tabRoutes.slice(meio);
 
-  function item(route: { key: string; name: string }) {
-    const icon = icons[route.name];
+  function renderItem(route: { key: string; name: string }) {
     const { options } = descriptors[route.key];
     const label = (options.title ?? route.name) as string;
     const realIndex = state.routes.findIndex((r) => r.key === route.key);
@@ -48,34 +45,81 @@ export function TabBar({ state, descriptors, navigation, icons, activeColor = Br
       if (!focused && !event.defaultPrevented) navigation.navigate(route.name);
     };
 
-    return (
-      <Pressable key={route.key} accessibilityRole="button" accessibilityState={{ selected: focused }} onPress={onPress} style={styles.item}>
-        <Ionicons name={icon} size={24} color={focused ? activeColor : theme.textSecondary} />
-        <ThemedText style={[styles.label, { color: focused ? activeColor : theme.textSecondary }]} numberOfLines={1}>
-          {label}
-        </ThemedText>
-      </Pressable>
-    );
+    return <TabItem key={route.key} icon={icons[route.name]} label={label} focused={focused} activeColor={activeColor} inactiveColor={theme.textSecondary} onPress={onPress} />;
   }
 
   return (
     <View style={[styles.host, { paddingBottom: Math.max(insets.bottom, Spacing.three) + Spacing.three }]}>
       <View style={[styles.bar, { backgroundColor: theme.backgroundElement, borderColor: theme.border }]}>
-        {esquerda.map(item)}
+        {tabRoutes.slice(0, meio).map(renderItem)}
         {center ? (
           <View style={styles.centerSlot}>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Ação principal"
-              onPress={center.onPress}
-              style={({ pressed }) => [styles.fab, { backgroundColor: center.color }, pressed && styles.fabPressed]}>
-              <Ionicons name={center.icon} size={28} color={Brand.branco} />
-            </Pressable>
+            <CenterFab center={center} />
           </View>
         ) : null}
-        {direita.map(item)}
+        {tabRoutes.slice(meio).map(renderItem)}
       </View>
     </View>
+  );
+}
+
+function TabItem({
+  icon,
+  label,
+  focused,
+  activeColor,
+  inactiveColor,
+  onPress,
+}: {
+  icon: IconName;
+  label: string;
+  focused: boolean;
+  activeColor: string;
+  inactiveColor: string;
+  onPress: () => void;
+}) {
+  const anim = useRef(new Animated.Value(focused ? 1 : 0)).current;
+
+  useEffect(() => {
+    Animated.spring(anim, { toValue: focused ? 1 : 0, useNativeDriver: true, friction: 6, tension: 140 }).start();
+  }, [focused, anim]);
+
+  const translateY = anim.interpolate({ inputRange: [0, 1], outputRange: [0, -7] });
+  const scale = anim.interpolate({ inputRange: [0, 1], outputRange: [1, 1.12] });
+  const color = focused ? activeColor : inactiveColor;
+
+  return (
+    <Pressable accessibilityRole="button" accessibilityState={{ selected: focused }} onPress={onPress} style={styles.item}>
+      <Animated.View style={{ transform: [{ translateY }, { scale }] }}>
+        <Ionicons name={icon} size={24} color={color} />
+      </Animated.View>
+      <ThemedText style={[styles.label, { color }]} numberOfLines={1}>
+        {label}
+      </ThemedText>
+    </Pressable>
+  );
+}
+
+function CenterFab({ center }: { center: Center }) {
+  const press = useRef(new Animated.Value(0)).current;
+
+  const animar = (para: number) =>
+    Animated.spring(press, { toValue: para, useNativeDriver: true, friction: 6, tension: 180 }).start();
+
+  const scale = press.interpolate({ inputRange: [0, 1], outputRange: [1, 0.9] });
+
+  return (
+    <Animated.View style={{ transform: [{ translateY: -(FAB / 2) }, { scale }] }}>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Ação principal"
+        onPressIn={() => animar(1)}
+        onPressOut={() => animar(0)}
+        onPress={center.onPress}
+        style={[styles.fab, { backgroundColor: center.color }]}>
+        <Ionicons name={center.icon} size={28} color={Brand.branco} />
+      </Pressable>
+    </Animated.View>
   );
 }
 
@@ -92,7 +136,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.two,
     ...Shadow.bar,
   },
-  item: { flex: 1, alignItems: 'center', gap: 3, paddingVertical: 2 },
+  item: { flex: 1, alignItems: 'center', gap: 4, paddingVertical: 2 },
   label: { fontFamily: FontFamily.tag, fontSize: 11 },
   centerSlot: { width: FAB + Spacing.two, alignItems: 'center' },
   fab: {
@@ -101,8 +145,6 @@ const styles = StyleSheet.create({
     borderRadius: FAB / 2,
     alignItems: 'center',
     justifyContent: 'center',
-    transform: [{ translateY: -(FAB / 2) }],
     ...Shadow.fab,
   },
-  fabPressed: { transform: [{ translateY: -(FAB / 2) }, { scale: 0.94 }] },
 });
