@@ -29,11 +29,12 @@ export const Brand = {
 export const Colors = {
   light: {
     text: Brand.chumbo,
-    textSecondary: '#5B6B7A',
-    background: Brand.cinzaEscama,
+    textSecondary: '#6E7681',
+    // Fundo agrupado estilo iOS (systemGroupedBackground) + cards brancos.
+    background: '#F2F4F7',
     backgroundElement: Brand.branco,
-    backgroundSelected: '#E3EAE8',
-    border: '#DDE5E3',
+    backgroundSelected: '#E9EDF1',
+    border: '#E6EAEF',
     primary: Brand.azulRio,
     secondary: Brand.teal,
     accent: Brand.dourado,
@@ -104,12 +105,38 @@ export const Spacing = {
   six: 64,
 } as const;
 
-/** Cantos levemente arredondados (amigável, mas corporativo) — base ~8px. */
+/** Cantos arredondados estilo iOS (continuous corners). */
 export const Radius = {
-  sm: 8,
-  md: 12,
-  lg: 16,
+  sm: 10,
+  md: 14,
+  lg: 18,
+  xl: 24,
   pill: 999,
+} as const;
+
+/** Sombras suaves estilo iOS (substituem bordas duras nos cards). */
+export const Shadow = {
+  card: {
+    shadowColor: '#0A2540',
+    shadowOpacity: 0.06,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 2,
+  },
+  fab: {
+    shadowColor: '#0A2540',
+    shadowOpacity: 0.24,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 10,
+  },
+  bar: {
+    shadowColor: '#0A2540',
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: -3 },
+    elevation: 16,
+  },
 } as const;
 
 export const BottomTabInset = Platform.select({ ios: 50, android: 80 }) ?? 0;

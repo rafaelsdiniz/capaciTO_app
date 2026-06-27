@@ -1,10 +1,10 @@
 import { type ReactNode } from 'react';
 import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
-import { Radius, Spacing } from '@/constants/theme';
+import { Radius, Shadow, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
-/** Caixa de conteúdo com cantos suaves (8–12px) e leve borda. */
+/** Cartão estilo iOS: branco, cantos suaves e sombra leve (sem borda dura). */
 export function Card({
   children,
   onPress,
@@ -15,18 +15,11 @@ export function Card({
   style?: StyleProp<ViewStyle>;
 }) {
   const theme = useTheme();
-  const base: StyleProp<ViewStyle> = [
-    styles.card,
-    { backgroundColor: theme.backgroundElement, borderColor: theme.border },
-    style,
-  ];
+  const base: StyleProp<ViewStyle> = [styles.card, { backgroundColor: theme.backgroundElement }, style];
 
   if (onPress) {
     return (
-      <Pressable
-        accessibilityRole="button"
-        onPress={onPress}
-        style={({ pressed }) => [base, { opacity: pressed ? 0.9 : 1 }]}>
+      <Pressable accessibilityRole="button" onPress={onPress} style={({ pressed }) => [base, pressed && styles.pressed]}>
         {children}
       </Pressable>
     );
@@ -36,9 +29,10 @@ export function Card({
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: Radius.md,
-    borderWidth: 1,
+    borderRadius: Radius.lg,
     padding: Spacing.three,
     gap: Spacing.two,
+    ...Shadow.card,
   },
+  pressed: { opacity: 0.96, transform: [{ scale: 0.99 }] },
 });

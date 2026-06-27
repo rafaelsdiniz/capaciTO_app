@@ -5,12 +5,13 @@ import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { Logo } from '@/components/ui/logo';
-import { Spacing } from '@/constants/theme';
+import { FontFamily, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
 /**
- * Cabeçalho de tela. Mostra a Logo (ou título) e um slot de ação à direita.
- * `back` exibe o botão voltar. Deixa o espaço da marca no topo das telas.
+ * Cabeçalho estilo iOS:
+ * - telas raiz: large title (grande, à esquerda) + subtítulo opcional;
+ * - telas empilhadas (`back`): navigation bar com chevron e título centralizado.
  */
 export function AppHeader({
   title,
@@ -28,43 +29,57 @@ export function AppHeader({
   const theme = useTheme();
   const router = useRouter();
 
-  return (
-    <View style={styles.container}>
-      <View style={styles.left}>
-        {back ? (
-          <Pressable accessibilityRole="button" onPress={() => router.back()} hitSlop={10} style={styles.backBtn}>
-            <Ionicons name="chevron-back" size={24} color={theme.text} />
-          </Pressable>
-        ) : null}
-        {showLogo ? (
-          <Logo size="sm" />
-        ) : (
-          <View style={styles.titles}>
-            {title ? <ThemedText type="subtitle">{title}</ThemedText> : null}
-            {subtitle ? (
-              <ThemedText type="small" themeColor="textSecondary">
-                {subtitle}
-              </ThemedText>
-            ) : null}
-          </View>
-        )}
+  // Navigation bar (tela empilhada): título centralizado entre back e ação.
+  if (back) {
+    return (
+      <View style={styles.navbar}>
+        <Pressable accessibilityRole="button" onPress={() => router.back()} hitSlop={12} style={styles.navSide}>
+          <Ionicons name="chevron-back" size={26} color={theme.primary} />
+        </Pressable>
+        <View style={styles.navTitle}>
+          {title ? (
+            <ThemedText style={styles.navTitleText} numberOfLines={1}>
+              {title}
+            </ThemedText>
+          ) : null}
+        </View>
+        <View style={[styles.navSide, styles.navRight]}>{right}</View>
       </View>
-      {right ? <View>{right}</View> : null}
+    );
+  }
+
+  // Large title (tela raiz).
+  return (
+    <View style={styles.large}>
+      <View style={styles.largeTopRow}>
+        {showLogo ? <Logo size="sm" /> : <View />}
+        {right ? <View>{right}</View> : null}
+      </View>
+      {title ? <ThemedText style={styles.largeTitle}>{title}</ThemedText> : null}
+      {subtitle ? (
+        <ThemedText type="small" themeColor="textSecondary">
+          {subtitle}
+        </ThemedText>
+      ) : null}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  navbar: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: Spacing.four,
-    paddingTop: Spacing.three,
+    paddingHorizontal: Spacing.three,
+    paddingTop: Spacing.two,
     paddingBottom: Spacing.two,
-    gap: Spacing.two,
+    minHeight: 44,
   },
-  left: { flexDirection: 'row', alignItems: 'center', gap: Spacing.two, flex: 1 },
-  backBtn: { marginLeft: -4 },
-  titles: { gap: 2, flex: 1 },
+  navSide: { width: 64, justifyContent: 'center' },
+  navRight: { alignItems: 'flex-end' },
+  navTitle: { flex: 1, alignItems: 'center' },
+  navTitleText: { fontFamily: FontFamily.tituloSemi, fontSize: 17 },
+
+  large: { paddingHorizontal: Spacing.four, paddingTop: Spacing.three, paddingBottom: Spacing.two, gap: 2 },
+  largeTopRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 28 },
+  largeTitle: { fontFamily: FontFamily.tituloBold, fontSize: 30, lineHeight: 36, marginTop: Spacing.one },
 });

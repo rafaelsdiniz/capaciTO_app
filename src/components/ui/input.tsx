@@ -17,11 +17,7 @@ export function Input({
   return (
     <View style={styles.field}>
       {label ? <ThemedText type="smallBold">{label}</ThemedText> : null}
-      <View
-        style={[
-          styles.box,
-          { backgroundColor: theme.backgroundElement, borderColor: theme.border },
-        ]}>
+      <View style={[styles.box, { backgroundColor: theme.backgroundSelected }]}>
         {icon ? <Ionicons name={icon} size={18} color={theme.textSecondary} /> : null}
         <TextInput
           style={[styles.input, { color: theme.text }]}
@@ -44,10 +40,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.two,
-    borderWidth: 1,
-    borderRadius: Radius.sm,
+    borderRadius: Radius.md,
     paddingHorizontal: Spacing.three,
-    minHeight: 52,
+    minHeight: 50,
   },
   input: { flex: 1, fontSize: 16, paddingVertical: Spacing.three },
 });
