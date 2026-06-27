@@ -102,23 +102,46 @@ function TabItem({
 
 function CenterFab({ center }: { center: Center }) {
   const press = useRef(new Animated.Value(0)).current;
+  const pulse = useRef(new Animated.Value(0)).current;
+
+  // Pulsação suave contínua para destacar a ação principal.
+  useEffect(() => {
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulse, { toValue: 1, duration: 1200, useNativeDriver: true }),
+        Animated.timing(pulse, { toValue: 0, duration: 1200, useNativeDriver: true }),
+      ]),
+    );
+    loop.start();
+    return () => loop.stop();
+  }, [pulse]);
 
   const animar = (para: number) =>
     Animated.spring(press, { toValue: para, useNativeDriver: true, friction: 6, tension: 180 }).start();
 
-  const scale = press.interpolate({ inputRange: [0, 1], outputRange: [1, 0.9] });
+  const pressScale = press.interpolate({ inputRange: [0, 1], outputRange: [1, 0.88] });
+  const pulseScale = pulse.interpolate({ inputRange: [0, 1], outputRange: [1, 1.07] });
+  // Anel de "respiração" por trás do botão.
+  const haloScale = pulse.interpolate({ inputRange: [0, 1], outputRange: [1, 1.35] });
+  const haloOpacity = pulse.interpolate({ inputRange: [0, 1], outputRange: [0.28, 0] });
 
   return (
-    <Animated.View style={{ transform: [{ scale }] }}>
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="Ação principal"
-        onPressIn={() => animar(1)}
-        onPressOut={() => animar(0)}
-        onPress={center.onPress}
-        style={[styles.fab, { backgroundColor: center.color }]}>
-        <Ionicons name={center.icon} size={26} color={Brand.branco} />
-      </Pressable>
+    <Animated.View style={{ transform: [{ scale: pressScale }] }}>
+      <Animated.View
+        pointerEvents="none"
+        style={[styles.halo, { backgroundColor: center.color, opacity: haloOpacity, transform: [{ scale: haloScale }] }]}
+      />
+      <Animated.View style={{ transform: [{ scale: pulseScale }] }}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Ação principal"
+          onPressIn={() => animar(1)}
+          onPressOut={() => animar(0)}
+          onPress={center.onPress}
+          style={[styles.fab, { backgroundColor: center.color }]}>
+          <Ionicons name={center.icon} size={26} color={Brand.branco} />
+        </Pressable>
+      </Animated.View>
     </Animated.View>
   );
 }
@@ -139,6 +162,7 @@ const styles = StyleSheet.create({
   item: { flex: 1, alignItems: 'center', gap: 4, paddingVertical: 2 },
   label: { fontFamily: FontFamily.tag, fontSize: 11 },
   centerSlot: { width: FAB + Spacing.two, alignItems: 'center' },
+  halo: { position: 'absolute', width: FAB, height: FAB, borderRadius: FAB / 2 },
   fab: {
     width: FAB,
     height: FAB,
