@@ -11,6 +11,15 @@
 ## 1. Visão do produto (3 linhas)
 O trabalhador **aprende** em microvídeos verticais e treinos Just-in-Time por QR na estação → cada treino concluído **certifica** uma competência na sua Carteira de Qualificação Digital (o perfil) → com o perfil certificado ele **é encontrado** pelas indústrias de alimentos do TO → a **indústria contrata** gente qualificada. O perfil/carteira é o coração; aprendizagem, QR e vagas existem para preencher ou consumir esse perfil.
 
+### 1.1 Segmento herói: frigorífico de pescado / piscicultura
+**Decisão de produto:** a plataforma é **horizontal** (multi-segmento no modelo de dados — `Empresa.segmento`, RNF08), mas a **demo, o seed e a narrativa são ancorados em pescado** — a cara da indústria de alimentos do TO (potência em tilápia/piscicultura) e onde a dor sanitária (cadeia de frio, câmara fria) é mais palpável.
+
+Implicações práticas:
+- **Microvídeos e estações** giram em torno de pescado: *higienização de mãos*, *recepção de pescado*, *como agir na câmara fria*.
+- **Seed:** 1 frigorífico de pescado completo (estações, competências, vaga) + 1 laticínio e 1 panificadora só de figuração (1–2 registros) para mostrar escala.
+- **Pitch:** "Começamos no pescado e a mesma plataforma já atende laticínio, polpa e panificação" — protege Aderência (25) **e** Modelo de negócio/escala (15).
+- **Não** estreitar o produto/código a um nicho: o catálogo de competências e o multi-empresa continuam genéricos.
+
 ---
 
 ## 2. Estrutura do repositório (REAL — NÃO é monorepo)
@@ -162,7 +171,11 @@ Todo código que toca esses fluxos DEVE respeitar:
 ## 8. A "fatia que roda ao vivo" — PRIORIDADE MÁXIMA
 **QR → microvídeo → certificação aparecendo no perfil.**
 
-Esta jornada é o que será demonstrado ao vivo e protege as notas de **Qualidade do protótipo (15)** e **Viabilidade (20)**. Ela **não pode quebrar**. Caminho mínimo de ponta a ponta:
+Esta jornada é o que será demonstrado ao vivo e protege as notas de **Qualidade do protótipo (15)** e **Viabilidade (20)**. Ela **não pode quebrar**.
+
+**Cenário da demo (pescado):** o trabalhador chega na estação da **câmara fria** do frigorífico de pescado, escaneia o QR → abre o microvídeo *"Como agir na câmara fria"* → conclui → a competência **"Segurança em câmara fria"** aparece na carteira → uma vaga de pescado que exige essa competência passa a dar match.
+
+Caminho mínimo de ponta a ponta:
 
 1. App: trabalhador logado **escaneia QR** de uma estação (RF17).
 2. Backend: resolve `codigo_qr` → `Estacao` → `Conteudo` vigente (RN04).
