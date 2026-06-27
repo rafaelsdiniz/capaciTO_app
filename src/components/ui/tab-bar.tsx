@@ -59,7 +59,7 @@ export function TabBar({ state, descriptors, navigation, icons, activeColor = Br
   }
 
   return (
-    <View style={[styles.host, { paddingBottom: Math.max(insets.bottom, Spacing.two) }]}>
+    <View style={[styles.host, { paddingBottom: Math.max(insets.bottom, Spacing.three) + Spacing.three }]}>
       <View style={[styles.bar, { backgroundColor: theme.backgroundElement, borderColor: theme.border }]}>
         {esquerda.map(item)}
         {center ? (
@@ -82,7 +82,7 @@ export function TabBar({ state, descriptors, navigation, icons, activeColor = Br
 const FAB = 62;
 
 const styles = StyleSheet.create({
-  host: { paddingHorizontal: Spacing.three, paddingTop: FAB / 2, backgroundColor: 'transparent' },
+  host: { paddingHorizontal: Spacing.four, paddingTop: FAB / 2, backgroundColor: 'transparent' },
   bar: {
     flexDirection: 'row',
     alignItems: 'center',
