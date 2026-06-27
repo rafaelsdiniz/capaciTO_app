@@ -26,13 +26,18 @@ export default function PerfilEditarScreen() {
     });
   }, []);
 
-  function salvar() {
+  async function salvar() {
     setSalvando(true);
-    // Mock: simula persistência. F2/back: PUT /perfil/me.
-    setTimeout(() => {
-      setSalvando(false);
+    try {
+      await api.perfil.atualizar({
+        nome,
+        cidade,
+        funcoesInteresse: funcoes.split(',').map((f) => f.trim()).filter(Boolean),
+      });
       router.back();
-    }, 500);
+    } finally {
+      setSalvando(false);
+    }
   }
 
   return (
