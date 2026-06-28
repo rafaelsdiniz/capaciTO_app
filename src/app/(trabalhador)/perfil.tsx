@@ -11,13 +11,13 @@ import { type IconName } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Screen } from '@/components/ui/screen';
 import { Tag } from '@/components/ui/tag';
-import { Brand, Spacing } from '@/constants/theme';
+import { Brand, FontFamily, Radius, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { api } from '@/lib/api';
 import type { PerfilMe } from '@/lib/api/types';
 import { useSession } from '@/lib/session/session-context';
 
-/** Hub da conta do trabalhador: dados, certificados, candidaturas, visibilidade. */
+/** Aba Meu Perfil: currículo do trabalhador (dados, competências, completude). */
 export default function PerfilScreen() {
   const router = useRouter();
   const { usuario, sair } = useSession();
@@ -49,9 +49,11 @@ export default function PerfilScreen() {
     router.replace('/');
   }
 
+  const completude = perfil?.completude ?? 0;
+
   return (
     <Screen scroll padded={false}>
-      <AppHeader centered title="Minha conta" />
+      <AppHeader centered title="Meu perfil" subtitle="Seu currículo na indústria de alimentos" />
 
       <View style={styles.body}>
         {/* Cartão de identidade */}
@@ -72,18 +74,46 @@ export default function PerfilScreen() {
           </View>
         </Card>
 
-        {/* Ação principal: ler QR da estação (fatia ao vivo) */}
-        <Button title="Escanear QR da estação" icon="qr-code" onPress={() => router.push('/escanear')} />
+        {/* Completude do currículo */}
+        <Card>
+          <View style={styles.rowBetween}>
+            <ThemedText type="smallBold">Currículo completo</ThemedText>
+            <ThemedText type="smallBold" style={{ color: Brand.azulRio }}>
+              {completude}%
+            </ThemedText>
+          </View>
+          <View style={styles.barTrack}>
+            <View style={[styles.barFill, { width: `${completude}%` }]} />
+          </View>
+          <ThemedText type="small" themeColor="textSecondary">
+            Complete seus dados e competências para aparecer em mais vagas.
+          </ThemedText>
+        </Card>
+
+        {/* Competências (currículo) */}
+        <Card>
+          <View style={styles.rowBetween}>
+            <ThemedText type="smallBold">Minhas competências</ThemedText>
+            <Pressable onPress={() => router.push('/perfil-editar')} hitSlop={8}>
+              <Ionicons name="add-circle" size={22} color={Brand.teal} />
+            </Pressable>
+          </View>
+          {perfil && perfil.certificacoes.length > 0 ? (
+            <View style={styles.comps}>
+              {perfil.certificacoes.map((c) => (
+                <Tag key={c.id} label={c.competencia.nome} tone="teal" icon="✓" />
+              ))}
+            </View>
+          ) : (
+            <ThemedText type="small" themeColor="textSecondary">
+              Você ainda não declarou competências. Toque em + para adicionar.
+            </ThemedText>
+          )}
+        </Card>
 
         {/* Atalhos */}
         <View style={styles.menu}>
-          <MenuRow icon="person-outline" label="Editar meus dados" onPress={() => router.push('/perfil-editar')} />
-          <MenuRow
-            icon="ribbon-outline"
-            label="Meus certificados"
-            badge={perfil ? String(perfil.certificacoes.length) : undefined}
-            onPress={() => router.push('/certificados')}
-          />
+          <MenuRow icon="create-outline" label="Editar currículo" onPress={() => router.push('/perfil-editar')} />
           <MenuRow
             icon="document-text-outline"
             label="Minhas candidaturas"
@@ -92,7 +122,7 @@ export default function PerfilScreen() {
           />
         </View>
 
-        {/* Visibilidade */}
+        {/* Visibilidade (LGPD) */}
         <Card style={styles.rowBetween}>
           <View style={styles.flex}>
             <ThemedText type="smallBold">Visível para indústrias</ThemedText>
@@ -130,8 +160,11 @@ const styles = StyleSheet.create({
   body: { paddingHorizontal: Spacing.four, paddingBottom: Spacing.six, gap: Spacing.three },
   identidade: { flexDirection: 'row', alignItems: 'center', gap: Spacing.three },
   nome: { fontSize: 18 },
+  rowBetween: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: Spacing.three },
+  barTrack: { height: 10, borderRadius: Radius.pill, backgroundColor: '#EEF2F1', overflow: 'hidden', marginVertical: 6 },
+  barFill: { height: 10, borderRadius: Radius.pill, backgroundColor: Brand.azulRio },
+  comps: { flexDirection: 'row', gap: Spacing.one, flexWrap: 'wrap' },
   menu: { gap: Spacing.two },
   menuRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.three },
   menuIcon: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
-  rowBetween: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: Spacing.three },
 });

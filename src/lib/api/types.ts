@@ -181,3 +181,49 @@ export type TrabalhadorResumo = {
   completude: number;
   competencias: string[];
 };
+
+// --- PÓS-PIVOT: Qualificação (editais/cursos/bolsas) + Plano de carreira + Funcionários ---
+
+export type TipoOportunidade = 'EDITAL' | 'CURSO_GRATUITO' | 'BOLSA';
+export type ModalidadeOportunidade = 'PRESENCIAL' | 'ONLINE' | 'HIBRIDO';
+
+/** Oportunidade de qualificação real (curadoria) — onde o trabalhador pode se capacitar. */
+export type Oportunidade = {
+  id: string;
+  titulo: string;
+  instituicao: string;
+  tipo: TipoOportunidade;
+  modalidade: ModalidadeOportunidade;
+  municipio?: string;
+  link: string;
+  prazoInscricao?: string; // ISO
+  gratuito: boolean;
+  descricao?: string;
+  /** Competências que esta oportunidade desenvolve. */
+  competencias: Competencia[];
+};
+
+/** Lacuna de competência: o que falta + onde se qualificar. */
+export type Lacuna = {
+  competencia: Competencia;
+  /** Quantas vagas abertas exigem esta competência. */
+  vagasQueExigem: number;
+  ondeQualificar: Oportunidade[];
+};
+
+/** Plano de carreira: análise de lacuna perfil × vagas. */
+export type PlanoCarreira = {
+  competenciasAtuais: number;
+  vagasCompativeis: number;
+  lacunas: Lacuna[];
+  oportunidadesRecomendadas: Oportunidade[];
+};
+
+/** Funcionário (vínculo empresa ↔ trabalhador contratado). */
+export type Funcionario = {
+  id: string;
+  nome: string;
+  cargo: string;
+  admissao?: string; // ISO
+  competencias: string[];
+};

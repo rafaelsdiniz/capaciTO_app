@@ -35,16 +35,16 @@ function delay<T>(value: T, ms = 600): Promise<T> {
 const usuariosMock: (Usuario & { senha: string })[] = [
   {
     id: 'u-trab-1',
-    nome: 'Maria da Pesca',
-    email: 'maria@trab.com',
+    nome: 'Maria Souza',
+    email: 'maria@email.com',
     telefone: '63999990001',
     papel: 'TRABALHADOR',
     senha: '123456',
   },
   {
     id: 'u-ind-1',
-    nome: 'Frigorífico Pescado TO',
-    email: 'rh@pescado.com',
+    nome: 'Frigopeixe Tocantins',
+    email: 'rh@frigopeixe.com',
     papel: 'INDUSTRIA',
     senha: '123456',
   },

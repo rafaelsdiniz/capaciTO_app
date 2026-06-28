@@ -53,6 +53,11 @@ import {
   registroReal,
   resolverQrReal,
 } from '@/lib/api/real';
+import {
+  funcionariosMockFn,
+  listarOportunidadesMock,
+  planoCarreiraMock,
+} from '@/lib/api/mock-pivot';
 import type {
   ApiError,
   AuthResponse,
@@ -61,11 +66,15 @@ import type {
   Conteudo,
   EmpresaDashboard,
   Estacao,
+  Funcionario,
   LoginRequest,
+  Oportunidade,
   OrigemConclusao,
   PerfilMe,
+  PlanoCarreira,
   RegistroRequest,
   ResultadoConclusao,
+  TipoOportunidade,
   TrabalhadorResumo,
   Vaga,
   VagaComMatch,
@@ -73,8 +82,14 @@ import type {
 
 export { API_BASE_URL } from '@/lib/api/http';
 
-/** Liga/desliga a API real globalmente. `false` força 100% mock (offline/demo). */
-export const BACKEND_ATIVO = true;
+/**
+ * Liga/desliga a API real globalmente. `false` força 100% mock (offline/demo).
+ * MOCK-FIRST no pós-pivot: a camada `real.ts` ainda aponta para os DTOs antigos
+ * (conteúdos/estações/certificações) e precisa ser religada ao novo backend (M7).
+ * Mantemos `false` para o app rodar 100% no mock, garantido. Login demo:
+ * maria@email.com (trabalhador) · rh@frigopeixe.com (empresa) — senha 123456.
+ */
+export const BACKEND_ATIVO = false;
 
 /**
  * Coerência de sessão: se o LOGIN caiu no mock (backend inacessível), todas as
@@ -224,6 +239,22 @@ export const api = {
     // MOCK: backend não expõe busca de trabalhadores por competência.
     buscar(competencia?: string): Promise<TrabalhadorResumo[]> {
       return buscarTrabalhadoresMock(competencia);
+    },
+  },
+  // PÓS-PIVOT (mock-first; ligar no backend depois)
+  oportunidades: {
+    listar(filtro?: { competenciaId?: string; tipo?: TipoOportunidade; municipio?: string }): Promise<Oportunidade[]> {
+      return listarOportunidadesMock(filtro);
+    },
+  },
+  planoCarreira: {
+    obter(): Promise<PlanoCarreira> {
+      return planoCarreiraMock();
+    },
+  },
+  funcionarios: {
+    daEmpresa(): Promise<Funcionario[]> {
+      return funcionariosMockFn();
     },
   },
 };

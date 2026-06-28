@@ -17,11 +17,13 @@ export default function Index() {
       router.replace('/login' as Href);
       return;
     }
+    // Rotas qualificadas pelo grupo: "vagas" existe nos dois (trabalhador e
+    // indústria); sem o grupo o expo-router resolveria para o lado errado.
     if (usuario.papel === 'INDUSTRIA' || usuario.papel === 'ADMIN') {
-      router.replace('/inicio' as Href);
+      router.replace('/(industria)/inicio' as Href);
       return;
     }
-    router.replace('/carteira' as Href);
+    router.replace('/(trabalhador)/vagas' as Href);
   }, [router, usuario]);
 
   return <AppEntryAnimation onFinish={aoTerminarAnimacao} />;
