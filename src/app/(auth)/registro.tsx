@@ -4,7 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { type ReactNode, useState } from 'react';
 import {
   ActivityIndicator,
-  ImageBackground,
+  Image,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -31,7 +31,7 @@ const C = {
   gold: '#F2A51A',
 } as const;
 
-const HeroImage = require('@/assets/images/login-industria.jpg');
+const LOGO = require('@/assets/images/logoCapacito.png');
 
 // Remove o contorno (quadrado) que o navegador desenha no input focado (RN Web).
 const NO_OUTLINE = (Platform.OS === 'web' ? { outlineStyle: 'none' } : null) as object | null;
@@ -86,10 +86,23 @@ export default function RegistroScreen() {
     }
   }
 
+  function voltar() {
+    if (router.canGoBack()) router.back();
+    else router.replace('/login');
+  }
+
   return (
     <View style={s.page}>
-      <StatusBar style="light" />
-      <SafeAreaView style={s.flex} edges={['bottom']}>
+      <StatusBar style="dark" />
+      <SafeAreaView style={s.flex} edges={['top', 'bottom']}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Voltar"
+          onPress={voltar}
+          hitSlop={10}
+          style={s.back}>
+          <Ionicons name="chevron-back" size={26} color={C.ink} />
+        </Pressable>
         <KeyboardAvoidingView style={s.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
           <ScrollView
             style={s.flex}
@@ -98,35 +111,16 @@ export default function RegistroScreen() {
             keyboardShouldPersistTaps="handled"
             bounces={false}>
 
-            {/* ── Hero ─────────────────────────────────────────── */}
-            <View style={s.hero}>
-              <ImageBackground source={HeroImage} resizeMode="cover" style={s.heroImg} imageStyle={s.heroImgAsset}>
-                <View style={s.scrim} />
-                <View style={s.shade} />
-
-                <View style={s.brand}>
-                  <View style={s.brandMark}>
-                    <ThemedText style={s.brandMarkText}>C</ThemedText>
-                  </View>
-                  <View style={s.brandWord}>
-                    <ThemedText style={s.brandName}>Capaci</ThemedText>
-                    <ThemedText style={s.brandNameAccent}>TO</ThemedText>
-                  </View>
-                </View>
-
-                <View style={s.heroCopy}>
-                  <ThemedText style={s.heroTitle}>Crie sua conta</ThemedText>
-                  <ThemedText style={s.heroSubtitle}>
-                    Comece sua qualificação na indústria de alimentos do TO.
-                  </ThemedText>
-                </View>
-              </ImageBackground>
+            {/* ── Marca ────────────────────────────────────────── */}
+            <View style={s.brandHead}>
+              <Image source={LOGO} resizeMode="contain" style={s.logo} />
             </View>
 
             {/* ── Card ─────────────────────────────────────────── */}
             <View style={s.card}>
               <View style={s.formHeader}>
-                <ThemedText style={s.formTitle}>Cadastrar</ThemedText>
+                <ThemedText style={s.formTitle}>Crie sua conta</ThemedText>
+                <View style={s.accent} />
                 <ThemedText style={s.formSubtitle}>Escolha seu perfil e preencha seus dados.</ThemedText>
               </View>
 
@@ -281,41 +275,39 @@ function maiorDeIdade(iso: string): boolean {
 
 const s = StyleSheet.create({
   flex: { flex: 1 },
-  page: { flex: 1, backgroundColor: '#111820' },
-  scroll: { flexGrow: 1, backgroundColor: C.surface },
+  page: { flex: 1, backgroundColor: C.surface },
+  scroll: { flexGrow: 1, justifyContent: 'center', paddingTop: Spacing.four, backgroundColor: C.surface },
 
-  // Hero (mesmo modelo do login)
-  hero: { height: 200, overflow: 'hidden', backgroundColor: '#111820' },
-  heroImg: { flex: 1 },
-  heroImgAsset: { transform: [{ scale: 1.04 }] },
-  scrim: { position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, backgroundColor: 'rgba(5,12,20,0.70)' },
-  shade: { position: 'absolute', left: 0, right: 0, bottom: 0, height: 100, backgroundColor: 'rgba(5,12,20,0.40)' },
+  // Botão voltar
+  back: {
+    position: 'absolute',
+    top: Spacing.two,
+    left: Spacing.three,
+    zIndex: 10,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#F1F5F9',
+  },
 
-  brand: { position: 'absolute', top: Spacing.four, left: Spacing.four, zIndex: 2, flexDirection: 'row', alignItems: 'center', gap: Spacing.two },
-  brandMark: { width: 34, height: 34, borderRadius: 12, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.96)' },
-  brandMarkText: { color: C.primary, fontFamily: FontFamily.tituloBold, fontSize: 20, lineHeight: 24 },
-  brandWord: { flexDirection: 'row', alignItems: 'baseline' },
-  brandName: { color: Brand.branco, fontFamily: FontFamily.tituloBold, fontSize: 22, lineHeight: 28 },
-  brandNameAccent: { color: C.gold, fontFamily: FontFamily.tituloBold, fontSize: 22, lineHeight: 28 },
-
-  heroCopy: { position: 'absolute', left: Spacing.four, right: Spacing.four, bottom: 44, zIndex: 2, gap: Spacing.one },
-  heroTitle: { color: Brand.branco, fontFamily: FontFamily.tituloBold, fontSize: 26, lineHeight: 32 },
-  heroSubtitle: { width: '90%', color: '#EEF5FF', fontFamily: FontFamily.corpoMedio, fontSize: 13, lineHeight: 19 },
+  // Marca centralizada (mesmo modelo do login)
+  brandHead: { alignItems: 'center', marginBottom: Spacing.two },
+  logo: { width: 132, height: 132 },
 
   // Card
   card: {
-    marginTop: -28,
-    borderTopLeftRadius: 28,
-    borderTopRightRadius: 28,
     backgroundColor: C.surface,
     paddingHorizontal: Spacing.four,
-    paddingTop: Spacing.five,
+    paddingTop: Spacing.one,
     paddingBottom: Spacing.four,
     gap: Spacing.three,
   },
 
-  formHeader: { alignItems: 'center', gap: Spacing.one, marginBottom: Spacing.one },
-  formTitle: { color: C.primary, fontFamily: FontFamily.tituloBold, fontSize: 24, lineHeight: 30 },
+  formHeader: { alignItems: 'center', gap: Spacing.two, marginBottom: Spacing.one },
+  formTitle: { color: C.primary, fontFamily: FontFamily.tituloBold, fontSize: 24, lineHeight: 30, textAlign: 'center' },
+  accent: { width: 48, height: 4, borderRadius: Radius.pill, backgroundColor: C.gold },
   formSubtitle: { color: C.muted, fontFamily: FontFamily.corpo, fontSize: 13, lineHeight: 19, textAlign: 'center' },
 
   // Seletor de papel

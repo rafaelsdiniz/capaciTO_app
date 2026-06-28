@@ -13,13 +13,11 @@ export default function Index() {
   const { usuario } = useSession();
 
   const aoTerminarAnimacao = useCallback(() => {
-    if (!usuario) {
-      router.replace('/login' as Href);
-      return;
-    }
+    // Entrada livre: sem login, o visitante cai direto na vitrine de vagas e
+    // navega à vontade. O login só é exigido na hora de se candidatar (RF24).
     // Rotas qualificadas pelo grupo: "vagas" existe nos dois (trabalhador e
     // indústria); sem o grupo o expo-router resolveria para o lado errado.
-    if (usuario.papel === 'INDUSTRIA' || usuario.papel === 'ADMIN') {
+    if (usuario?.papel === 'INDUSTRIA' || usuario?.papel === 'ADMIN') {
       router.replace('/(industria)/inicio' as Href);
       return;
     }

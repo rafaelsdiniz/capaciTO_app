@@ -5,6 +5,7 @@ import { ActivityIndicator, FlatList, Pressable, ScrollView, StyleSheet, View } 
 
 import { ThemedText } from '@/components/themed-text';
 import { AppHeader } from '@/components/ui/app-header';
+import { AuthButton } from '@/components/ui/auth-button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Input } from '@/components/ui/input';
 import { Screen } from '@/components/ui/screen';
@@ -81,7 +82,7 @@ export default function VagasScreen() {
 
   return (
     <Screen padded={false}>
-      <AppHeader centered title="Vagas" subtitle="Oportunidades na indústria de alimentos do TO" />
+      <AppHeader centered title="Vagas" subtitle="Oportunidades na indústria de alimentos do TO" right={<AuthButton />} />
 
       <View style={styles.controles}>
         <Input icon="search" placeholder="Buscar por função ou empresa" value={busca} onChangeText={setBusca} />

@@ -4,10 +4,11 @@ import { StatusBar } from 'expo-status-bar';
 import { useRef, useState, type ReactNode } from 'react';
 import {
   ActivityIndicator,
-  ImageBackground,
+  Image,
   KeyboardAvoidingView,
   Platform,
   Pressable,
+  ScrollView,
   StyleSheet,
   TextInput,
   View,
@@ -42,7 +43,7 @@ const C = {
   gold: '#F2A51A',
 } as const;
 
-const HeroImage = require('@/assets/images/login-industria.jpg');
+const LOGO = require('@/assets/images/logoCapacito.png');
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 const SPRING = { damping: 18, mass: 0.75, stiffness: 220 };
 
@@ -74,137 +75,129 @@ export default function LoginScreen() {
     }
   }
 
+  function voltar() {
+    if (router.canGoBack()) router.back();
+    else router.replace('/');
+  }
+
   return (
     <View style={s.page}>
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
       <SafeAreaView style={s.flex} edges={['top', 'bottom']}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Voltar"
+          onPress={voltar}
+          hitSlop={10}
+          style={s.back}>
+          <Ionicons name="chevron-back" size={26} color={C.ink} />
+        </Pressable>
         <KeyboardAvoidingView style={s.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-          <View style={s.flex}>
+          <ScrollView
+            style={s.flex}
+            contentContainerStyle={s.scroll}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+            bounces={false}>
 
-            {/* ── Hero ─────────────────────────────────────────── */}
-            <View style={s.hero}>
-              <ImageBackground source={HeroImage} resizeMode="cover" style={s.heroImg} imageStyle={s.heroImgAsset}>
-                <View style={s.scrim} />
-                <View style={s.shade} />
-
-                <View style={s.brand}>
-                  <View style={s.brandMark}>
-                    <ThemedText style={s.brandMarkText}>C</ThemedText>
-                  </View>
-                  <View style={s.brandWord}>
-                    <ThemedText style={s.brandName}>Capaci</ThemedText>
-                    <ThemedText style={s.brandNameAccent}>TO</ThemedText>
-                  </View>
-                </View>
-
-                <View style={s.heroCopy}>
-                  <ThemedText style={s.heroTitle}>Bem-vindo!</ThemedText>
-                  <ThemedText style={s.heroSubtitle}>
-                    Acesse sua carteira digital e continue evoluindo na industria.
-                  </ThemedText>
-                </View>
-              </ImageBackground>
+            {/* ── Marca ────────────────────────────────────────── */}
+            <View style={s.brandHead}>
+              <Image source={LOGO} resizeMode="contain" style={s.logo} />
             </View>
 
-            {/* ── Card ─────────────────────────────────────────── */}
-            <View style={s.card}>
+            {/* ── Título ───────────────────────────────────────── */}
+            <View style={s.formHeader}>
+              <ThemedText style={s.formTitle}>Bem-vindo de volta</ThemedText>
+              <View style={s.accent} />
+              <ThemedText style={s.formSubtitle}>
+                Acesse sua carteira digital de qualificação.
+              </ThemedText>
+            </View>
 
-              {/* Bloco superior: título + formulário + ação principal */}
-              <View style={s.cardTop}>
-                <View style={s.formHeader}>
-                  <ThemedText style={s.formTitle}>Entrar</ThemedText>
-                  <ThemedText style={s.formSubtitle}>Use seu e-mail e senha cadastrados.</ThemedText>
-                </View>
+            <ErrorBox texto={erro} />
 
-                <ErrorBox texto={erro} />
+            <LoginField
+              label="E-mail"
+              icon="mail-outline"
+              placeholder="seu@email.com"
+              autoCapitalize="none"
+              keyboardType="email-address"
+              value={identificador}
+              onChangeText={setIdentificador}
+            />
 
-                <LoginField
-                  label="E-mail"
-                  icon="mail-outline"
-                  placeholder="seu@email.com"
-                  autoCapitalize="none"
-                  keyboardType="email-address"
-                  value={identificador}
-                  onChangeText={setIdentificador}
-                />
-
-                <LoginField
-                  label="Senha"
-                  icon="lock-closed-outline"
-                  placeholder="Sua senha"
-                  secureTextEntry={!senhaVisivel}
-                  value={senha}
-                  onChangeText={setSenha}
-                  right={
-                    <Pressable
-                      accessibilityRole="button"
-                      accessibilityLabel={senhaVisivel ? 'Ocultar senha' : 'Mostrar senha'}
-                      hitSlop={8}
-                      onPress={() => setSenhaVisivel((v) => !v)}>
-                      <Ionicons name={senhaVisivel ? 'eye-off-outline' : 'eye-outline'} size={20} color={C.muted} />
-                    </Pressable>
-                  }
-                />
-
-                <View style={s.optionsRow}>
-                  <Btn
-                    accessibilityRole="checkbox"
-                    accessibilityState={{ checked: lembrar }}
-                    onPress={() => setLembrar((v) => !v)}
-                    style={s.rememberRow}>
-                    <View style={[s.checkbox, lembrar && s.checkboxOn]}>
-                      {lembrar ? <Ionicons name="checkmark" size={13} color={Brand.branco} /> : null}
-                    </View>
-                    <ThemedText style={s.optionText}>Lembrar-me</ThemedText>
-                  </Btn>
-
-                  <Btn
-                    accessibilityRole="button"
-                    onPress={() => setErro('A recuperação de senha será liberada em breve.')}
-                    hitSlop={8}
-                    style={s.forgotBtn}>
-                    <ThemedText style={s.forgotText}>Esqueceu a senha?</ThemedText>
-                  </Btn>
-                </View>
-
-                <Btn
+            <LoginField
+              label="Senha"
+              icon="lock-closed-outline"
+              placeholder="Sua senha"
+              secureTextEntry={!senhaVisivel}
+              value={senha}
+              onChangeText={setSenha}
+              right={
+                <Pressable
                   accessibilityRole="button"
-                  onPress={aoEntrar}
-                  disabled={carregando}
-                  style={[s.primaryBtn, carregando && s.btnDisabled]}>
-                  {carregando
-                    ? <ActivityIndicator color={Brand.branco} />
-                    : <ThemedText style={s.primaryBtnText}>Entrar</ThemedText>}
-                </Btn>
-              </View>
+                  accessibilityLabel={senhaVisivel ? 'Ocultar senha' : 'Mostrar senha'}
+                  hitSlop={8}
+                  onPress={() => setSenhaVisivel((v) => !v)}>
+                  <Ionicons name={senhaVisivel ? 'eye-off-outline' : 'eye-outline'} size={20} color={C.muted} />
+                </Pressable>
+              }
+            />
 
-              {/* Bloco inferior: login social + criar conta */}
-              <View style={s.cardBottom}>
-                <View style={s.dividerRow}>
-                  <View style={s.divider} />
-                  <ThemedText style={s.dividerText}>ou entre com</ThemedText>
-                  <View style={s.divider} />
+            <View style={s.optionsRow}>
+              <Btn
+                accessibilityRole="checkbox"
+                accessibilityState={{ checked: lembrar }}
+                onPress={() => setLembrar((v) => !v)}
+                style={s.rememberRow}>
+                <View style={[s.checkbox, lembrar && s.checkboxOn]}>
+                  {lembrar ? <Ionicons name="checkmark" size={13} color={Brand.branco} /> : null}
                 </View>
+                <ThemedText style={s.optionText}>Lembrar-me</ThemedText>
+              </Btn>
 
-                <View style={s.socialRow}>
-                  <SocialIcon icon="logo-google"   color="#DB4437" label="Google" />
-                  <SocialIcon icon="logo-linkedin" color="#0A66C2" label="LinkedIn" />
-                  <SocialIcon icon="logo-facebook" color="#1877F2" label="Facebook" />
-                </View>
-
-                <View style={s.footerRow}>
-                  <ThemedText style={s.footerText}>Novo por aqui?</ThemedText>
-                  <Link href="/registro" asChild>
-                    <Pressable style={s.createLink} accessibilityRole="button">
-                      <ThemedText style={s.createLinkText}>Criar cadastro</ThemedText>
-                      <Ionicons name="arrow-forward" size={15} color={C.primary} />
-                    </Pressable>
-                  </Link>
-                </View>
-              </View>
+              <Btn
+                accessibilityRole="button"
+                onPress={() => setErro('A recuperação de senha será liberada em breve.')}
+                hitSlop={8}
+                style={s.forgotBtn}>
+                <ThemedText style={s.forgotText}>Esqueceu a senha?</ThemedText>
+              </Btn>
             </View>
 
-          </View>
+            <Btn
+              accessibilityRole="button"
+              onPress={aoEntrar}
+              disabled={carregando}
+              style={[s.primaryBtn, carregando && s.btnDisabled]}>
+              {carregando
+                ? <ActivityIndicator color={Brand.branco} />
+                : <ThemedText style={s.primaryBtnText}>Entrar</ThemedText>}
+            </Btn>
+
+            <View style={s.dividerRow}>
+              <View style={s.divider} />
+              <ThemedText style={s.dividerText}>ou entre com</ThemedText>
+              <View style={s.divider} />
+            </View>
+
+            <View style={s.socialRow}>
+              <SocialIcon icon="logo-google"   color="#DB4437" label="Google" />
+              <SocialIcon icon="logo-apple"    color="#111820" label="Apple" />
+              <SocialIcon icon="logo-facebook" color="#1877F2" label="Facebook" />
+            </View>
+
+            <View style={s.footerRow}>
+              <ThemedText style={s.footerText}>Novo por aqui?</ThemedText>
+              <Link href="/registro" asChild>
+                <Pressable style={s.createLink} accessibilityRole="button">
+                  <ThemedText style={s.createLinkText}>Criar cadastro</ThemedText>
+                  <Ionicons name="arrow-forward" size={15} color={C.primary} />
+                </Pressable>
+              </Link>
+            </View>
+
+          </ScrollView>
         </KeyboardAvoidingView>
       </SafeAreaView>
     </View>
@@ -317,44 +310,38 @@ function ErrorBox({ texto }: { texto?: string | null }) {
 
 const s = StyleSheet.create({
   flex: { flex: 1 },
-  page: { flex: 1, backgroundColor: '#111820' },
-
-  // Hero
-  hero: { height: 220, overflow: 'hidden', backgroundColor: '#111820' },
-  heroImg: { flex: 1 },
-  heroImgAsset: { transform: [{ scale: 1.04 }] },
-  scrim: { position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, backgroundColor: 'rgba(5,12,20,0.70)' },
-  shade: { position: 'absolute', left: 0, right: 0, bottom: 0, height: 100, backgroundColor: 'rgba(5,12,20,0.40)' },
-
-  brand: { position: 'absolute', top: Spacing.four, left: Spacing.four, zIndex: 2, flexDirection: 'row', alignItems: 'center', gap: Spacing.two },
-  brandMark: { width: 34, height: 34, borderRadius: 12, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.96)' },
-  brandMarkText: { color: C.primary, fontFamily: FontFamily.tituloBold, fontSize: 20, lineHeight: 24 },
-  brandWord: { flexDirection: 'row', alignItems: 'baseline' },
-  brandName: { color: Brand.branco, fontFamily: FontFamily.tituloBold, fontSize: 22, lineHeight: 28 },
-  brandNameAccent: { color: C.gold, fontFamily: FontFamily.tituloBold, fontSize: 22, lineHeight: 28 },
-
-  heroCopy: { position: 'absolute', left: Spacing.four, right: Spacing.four, bottom: 52, zIndex: 2, gap: Spacing.one },
-  heroTitle: { color: Brand.branco, fontFamily: FontFamily.tituloBold, fontSize: 28, lineHeight: 34 },
-  heroSubtitle: { width: '88%', color: '#EEF5FF', fontFamily: FontFamily.corpoMedio, fontSize: 13, lineHeight: 19 },
-
-  // Card — dois blocos: form (topo) e social/cadastro (base), distribuídos.
-  card: {
-    flex: 1,
-    marginTop: -30,
-    borderTopLeftRadius: 28,
-    borderTopRightRadius: 28,
+  page: { flex: 1, backgroundColor: C.surface },
+  scroll: {
+    flexGrow: 1,
+    justifyContent: 'center',
     paddingHorizontal: Spacing.four,
-    paddingTop: Spacing.five,
-    paddingBottom: Spacing.four,
-    backgroundColor: C.surface,
-    justifyContent: 'space-between',
+    paddingVertical: Spacing.five,
+    gap: Spacing.three,
   },
-  cardTop: { gap: Spacing.three },
-  cardBottom: { gap: Spacing.three },
 
-  formHeader: { alignItems: 'center', gap: Spacing.one, marginBottom: Spacing.one },
-  formTitle: { color: C.primary, fontFamily: FontFamily.tituloBold, fontSize: 24, lineHeight: 30 },
-  formSubtitle: { color: C.muted, fontFamily: FontFamily.corpo, fontSize: 13, lineHeight: 19, textAlign: 'center' },
+  // Botão voltar
+  back: {
+    position: 'absolute',
+    top: Spacing.two,
+    left: Spacing.three,
+    zIndex: 10,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#F1F5F9',
+  },
+
+  // Marca centralizada
+  brandHead: { alignItems: 'center', marginBottom: Spacing.one },
+  logo: { width: 168, height: 168 },
+
+  // Título centralizado + acento dourado
+  formHeader: { alignItems: 'center', gap: Spacing.two, marginBottom: Spacing.one },
+  formTitle: { color: C.primary, fontFamily: FontFamily.tituloBold, fontSize: 26, lineHeight: 32, textAlign: 'center' },
+  accent: { width: 48, height: 4, borderRadius: Radius.pill, backgroundColor: C.gold },
+  formSubtitle: { color: C.muted, fontFamily: FontFamily.corpo, fontSize: 14, lineHeight: 20, textAlign: 'center' },
 
   // Fields
   field: { gap: Spacing.one },
@@ -400,19 +387,20 @@ const s = StyleSheet.create({
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 6 },
     elevation: 4,
+    marginTop: Spacing.one,
   },
   btnDisabled: { opacity: 0.58 },
   primaryBtnText: { color: Brand.branco, fontFamily: FontFamily.corpoMedio, fontSize: 16, lineHeight: 22 },
 
   // Divider + Social
-  dividerRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.three },
+  dividerRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.three, marginTop: Spacing.one },
   divider: { flex: 1, height: 1, backgroundColor: C.border },
   dividerText: { color: '#9AA8BA', fontFamily: FontFamily.corpo, fontSize: 13, lineHeight: 18 },
   socialRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: Spacing.three },
   socialBtn: { width: 46, height: 46, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: C.border, borderRadius: Radius.md, backgroundColor: Brand.branco },
 
   // Footer
-  footerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap', gap: Spacing.two },
+  footerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap', gap: Spacing.two, marginTop: Spacing.one },
   footerText: { color: C.muted, fontFamily: FontFamily.corpo, fontSize: 13, lineHeight: 18 },
   createLink: { flexDirection: 'row', alignItems: 'center', gap: Spacing.one },
   createLinkText: { color: C.primary, fontFamily: FontFamily.corpoMedio, fontSize: 13, lineHeight: 18 },

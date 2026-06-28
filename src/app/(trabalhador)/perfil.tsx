@@ -5,6 +5,7 @@ import { Pressable, StyleSheet, Switch, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { AppHeader } from '@/components/ui/app-header';
+import { AuthButton } from '@/components/ui/auth-button';
 import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { type IconName } from '@/components/ui/button';
@@ -53,7 +54,7 @@ export default function PerfilScreen() {
 
   return (
     <Screen scroll padded={false}>
-      <AppHeader centered title="Meu perfil" subtitle="Seu currículo na indústria de alimentos" />
+      <AppHeader centered title="Meu perfil" subtitle="Seu currículo na indústria de alimentos" right={<AuthButton />} />
 
       <View style={styles.body}>
         {/* Cartão de identidade */}

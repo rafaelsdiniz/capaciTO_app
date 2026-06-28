@@ -1,127 +1,86 @@
 import { useEffect, useRef, useState } from 'react';
-import { Animated, Easing, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Animated, Easing, Image, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 
-import { Brand, FontFamily, Spacing } from '@/constants/theme';
+import { Brand, FontFamily, Radius, Spacing } from '@/constants/theme';
 
-const TO_BLUE = '#214B9A';
-const TO_GOLD = '#F2A51A';
-const BACKGROUND = '#071A2D';
-const DURATION_MS = 6000;
+// Fundo branco: casa com o fundo da própria logo (sem "quadrado" visível).
+const BACKGROUND = '#FFFFFF';
+const DURATION_MS = 3200;
 
+const LOGO = require('@/assets/images/logoCapacito.png');
+
+/**
+ * Abertura do app: a logo CapaciTO surge com fade + zoom suave, seguida da
+ * tagline e de um acento dourado que cresce sob o texto. Segura um instante e
+ * dá fade-out, entregando o controle ao destino via onFinish (RF03).
+ */
 export function AppEntryAnimation({ onFinish }: { onFinish?: () => void }) {
-  const { height } = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
   const [visible, setVisible] = useState(true);
 
   const screenOpacity = useRef(new Animated.Value(1)).current;
-  const wordOpacity = useRef(new Animated.Value(0)).current;
-  const wordTranslate = useRef(new Animated.Value(18)).current;
-  const wordScale = useRef(new Animated.Value(1)).current;
-  const markOpacity = useRef(new Animated.Value(0)).current;
-  const markTranslate = useRef(new Animated.Value(18)).current;
-  const markScale = useRef(new Animated.Value(0.86)).current;
-  const tTranslate = useRef(new Animated.Value(-46)).current;
-  const oTranslate = useRef(new Animated.Value(46)).current;
-  const flagOpacity = useRef(new Animated.Value(0)).current;
-  const flagTranslate = useRef(new Animated.Value(18)).current;
-  const flagScale = useRef(new Animated.Value(0.92)).current;
+  const logoOpacity = useRef(new Animated.Value(0)).current;
+  const logoScale = useRef(new Animated.Value(0.82)).current;
+  const logoTranslate = useRef(new Animated.Value(16)).current;
+  const taglineOpacity = useRef(new Animated.Value(0)).current;
+  const taglineTranslate = useRef(new Animated.Value(10)).current;
+  const accentScale = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     setVisible(true);
     screenOpacity.setValue(1);
-    wordOpacity.setValue(0);
-    wordTranslate.setValue(18);
-    wordScale.setValue(1);
-    markOpacity.setValue(0);
-    markTranslate.setValue(18);
-    markScale.setValue(0.86);
-    tTranslate.setValue(-46);
-    oTranslate.setValue(46);
-    flagOpacity.setValue(0);
-    flagTranslate.setValue(18);
-    flagScale.setValue(0.92);
+    logoOpacity.setValue(0);
+    logoScale.setValue(0.82);
+    logoTranslate.setValue(16);
+    taglineOpacity.setValue(0);
+    taglineTranslate.setValue(10);
+    accentScale.setValue(0);
 
     const animation = Animated.sequence([
+      // 1) Logo entra: fade + zoom + leve subida.
       Animated.parallel([
-        Animated.timing(wordOpacity, {
+        Animated.timing(logoOpacity, {
           toValue: 1,
-          duration: 720,
+          duration: 760,
           easing: Easing.out(Easing.cubic),
           useNativeDriver: true,
         }),
-        Animated.timing(wordTranslate, {
-          toValue: 0,
-          duration: 720,
-          easing: Easing.out(Easing.cubic),
-          useNativeDriver: true,
-        }),
-      ]),
-      Animated.delay(1120),
-      Animated.parallel([
-        Animated.timing(wordOpacity, {
-          toValue: 0,
-          duration: 620,
-          easing: Easing.inOut(Easing.cubic),
-          useNativeDriver: true,
-        }),
-        Animated.timing(wordScale, {
-          toValue: 0.92,
-          duration: 620,
-          easing: Easing.inOut(Easing.cubic),
-          useNativeDriver: true,
-        }),
-        Animated.timing(markOpacity, {
+        Animated.timing(logoScale, {
           toValue: 1,
-          duration: 760,
+          duration: 880,
           easing: Easing.out(Easing.exp),
           useNativeDriver: true,
         }),
-        Animated.timing(markTranslate, {
+        Animated.timing(logoTranslate, {
           toValue: 0,
-          duration: 760,
-          easing: Easing.out(Easing.exp),
-          useNativeDriver: true,
-        }),
-        Animated.timing(markScale, {
-          toValue: 1,
-          duration: 760,
-          easing: Easing.out(Easing.exp),
-          useNativeDriver: true,
-        }),
-        Animated.timing(tTranslate, {
-          toValue: 0,
-          duration: 860,
-          easing: Easing.out(Easing.exp),
-          useNativeDriver: true,
-        }),
-        Animated.timing(oTranslate, {
-          toValue: 0,
-          duration: 860,
+          duration: 880,
           easing: Easing.out(Easing.exp),
           useNativeDriver: true,
         }),
       ]),
-      Animated.delay(680),
+      // 2) Tagline + acento dourado.
       Animated.parallel([
-        Animated.timing(flagOpacity, {
+        Animated.timing(taglineOpacity, {
           toValue: 1,
-          duration: 800,
+          duration: 520,
           easing: Easing.out(Easing.cubic),
           useNativeDriver: true,
         }),
-        Animated.timing(flagTranslate, {
+        Animated.timing(taglineTranslate, {
           toValue: 0,
-          duration: 800,
+          duration: 520,
           easing: Easing.out(Easing.cubic),
           useNativeDriver: true,
         }),
-        Animated.timing(flagScale, {
+        Animated.timing(accentScale, {
           toValue: 1,
-          duration: 800,
+          duration: 640,
           easing: Easing.out(Easing.cubic),
           useNativeDriver: true,
         }),
       ]),
-      Animated.delay(920),
+      // 3) Segura e some.
+      Animated.delay(820),
       Animated.timing(screenOpacity, {
         toValue: 0,
         duration: 520,
@@ -140,90 +99,55 @@ export function AppEntryAnimation({ onFinish }: { onFinish?: () => void }) {
     const fallback = setTimeout(() => {
       setVisible(false);
       onFinish?.();
-    }, DURATION_MS + 350);
+    }, DURATION_MS + 400);
 
     return () => {
       animation.stop();
       clearTimeout(fallback);
     };
   }, [
-    flagOpacity,
-    flagScale,
-    flagTranslate,
-    markOpacity,
-    markScale,
-    markTranslate,
-    oTranslate,
+    accentScale,
+    logoOpacity,
+    logoScale,
+    logoTranslate,
     onFinish,
     screenOpacity,
-    tTranslate,
-    wordOpacity,
-    wordScale,
-    wordTranslate,
+    taglineOpacity,
+    taglineTranslate,
   ]);
 
   if (!visible) return null;
+
+  const logoSize = Math.min(width * 0.72, 300);
 
   return (
     <Animated.View
       pointerEvents="auto"
       style={[styles.screen, { minHeight: Math.max(height, 720), opacity: screenOpacity }]}>
       <View style={styles.stage}>
-        <Animated.View
+        <Animated.Image
+          source={LOGO}
+          resizeMode="contain"
           style={[
-            styles.wordmark,
+            { width: logoSize, height: logoSize },
             {
-              opacity: wordOpacity,
-              transform: [{ translateY: wordTranslate }, { scale: wordScale }],
+              opacity: logoOpacity,
+              transform: [{ translateY: logoTranslate }, { scale: logoScale }],
             },
-          ]}>
-          <Text style={styles.wordCapaci}>Capaci</Text>
-          <Text style={styles.wordTo}>TO</Text>
-        </Animated.View>
+          ]}
+        />
 
         <Animated.View
           style={[
-            styles.toMark,
-            {
-              opacity: markOpacity,
-              transform: [{ translateY: markTranslate }, { scale: markScale }],
-            },
+            styles.tagBlock,
+            { opacity: taglineOpacity, transform: [{ translateY: taglineTranslate }] },
           ]}>
-          <View style={styles.toLetters}>
-            <Animated.Text style={[styles.toLetter, styles.toT, { transform: [{ translateX: tTranslate }] }]}>
-              T
-            </Animated.Text>
-            <Animated.Text style={[styles.toLetter, styles.toO, { transform: [{ translateX: oTranslate }] }]}>
-              O
-            </Animated.Text>
-          </View>
-          <Text style={styles.markCaption}>Tocantins em movimento</Text>
-        </Animated.View>
-
-        <Animated.View
-          style={[
-            styles.flagBlock,
-            {
-              opacity: flagOpacity,
-              transform: [{ translateY: flagTranslate }, { scale: flagScale }],
-            },
-          ]}>
-          <TocantinsFlag />
-          <Text style={styles.flagText}>CapaciTO</Text>
+          <Animated.View style={[styles.accent, { transform: [{ scaleX: accentScale }] }]} />
+          <Text style={styles.tagline}>Qualificação e conexão profissional</Text>
+          <Text style={styles.tagSub}>Indústria de alimentos do Tocantins</Text>
         </Animated.View>
       </View>
     </Animated.View>
-  );
-}
-
-function TocantinsFlag() {
-  return (
-    <View style={styles.flag}>
-      <View style={styles.flagGold} />
-      <View style={styles.flagBlue} />
-      <View style={styles.flagWhite} />
-      <View style={styles.flagSun} />
-    </View>
   );
 }
 
@@ -237,120 +161,36 @@ const styles = StyleSheet.create({
   },
   stage: {
     width: '100%',
-    minHeight: 360,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: Spacing.four,
-    transform: [{ translateY: -24 }],
+    gap: Spacing.three,
+    transform: [{ translateY: -12 }],
   },
-  wordmark: {
-    position: 'absolute',
-    flexDirection: 'row',
-    alignItems: 'baseline',
-  },
-  wordCapaci: {
-    color: Brand.branco,
-    fontFamily: FontFamily.tituloBold,
-    fontSize: 46,
-    lineHeight: 56,
-  },
-  wordTo: {
-    color: TO_GOLD,
-    fontFamily: FontFamily.tituloBold,
-    fontSize: 46,
-    lineHeight: 56,
-  },
-  toMark: {
+  tagBlock: {
     alignItems: 'center',
-    gap: Spacing.two,
+    gap: Spacing.one,
   },
-  toLetters: {
-    width: 156,
-    height: 92,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
-    borderRadius: 26,
-    backgroundColor: Brand.branco,
-    shadowColor: '#000000',
-    shadowOpacity: 0.2,
-    shadowRadius: 24,
-    shadowOffset: { width: 0, height: 16 },
-    elevation: 12,
+  accent: {
+    width: 56,
+    height: 4,
+    borderRadius: Radius.pill,
+    backgroundColor: Brand.dourado,
+    marginBottom: Spacing.two,
   },
-  toLetter: {
-    fontFamily: FontFamily.tituloBold,
-    fontSize: 54,
-    lineHeight: 62,
-  },
-  toT: {
-    color: TO_BLUE,
-  },
-  toO: {
-    color: TO_GOLD,
-  },
-  markCaption: {
-    color: '#DCE9F7',
-    fontFamily: FontFamily.corpoMedio,
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  flagBlock: {
-    position: 'absolute',
-    top: 260,
-    alignItems: 'center',
-    gap: Spacing.two,
-  },
-  flag: {
-    width: 154,
-    height: 94,
-    overflow: 'hidden',
-    borderWidth: 2,
-    borderColor: 'rgba(255,255,255,0.42)',
-    borderRadius: 18,
-    backgroundColor: TO_GOLD,
-  },
-  flagGold: {
-    position: 'absolute',
-    width: 190,
-    height: 126,
-    right: -28,
-    bottom: -34,
-    backgroundColor: TO_GOLD,
-    transform: [{ rotate: '-18deg' }],
-  },
-  flagBlue: {
-    position: 'absolute',
-    width: 190,
-    height: 126,
-    left: -52,
-    top: -54,
-    backgroundColor: TO_BLUE,
-    transform: [{ rotate: '-18deg' }],
-  },
-  flagWhite: {
-    position: 'absolute',
-    width: 220,
-    height: 42,
-    left: -34,
-    top: 26,
-    backgroundColor: Brand.branco,
-    transform: [{ rotate: '-18deg' }],
-  },
-  flagSun: {
-    position: 'absolute',
-    left: 66,
-    top: 35,
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: TO_GOLD,
-  },
-  flagText: {
-    color: Brand.branco,
+  tagline: {
+    color: Brand.azulRio,
     fontFamily: FontFamily.tituloSemi,
-    fontSize: 15,
+    fontSize: 16,
     lineHeight: 22,
+    textAlign: 'center',
+  },
+  tagSub: {
+    color: Brand.chumbo,
+    fontFamily: FontFamily.corpoMedio,
+    fontSize: 13,
+    lineHeight: 18,
+    textAlign: 'center',
+    opacity: 0.7,
   },
 });

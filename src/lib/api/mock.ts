@@ -48,6 +48,20 @@ const usuariosMock: (Usuario & { senha: string })[] = [
     papel: 'INDUSTRIA',
     senha: '123456',
   },
+  {
+    id: 'u-ind-2',
+    nome: 'Laticínios Araguaia',
+    email: 'rh@laticinios.com',
+    papel: 'INDUSTRIA',
+    senha: '123456',
+  },
+  {
+    id: 'u-ind-3',
+    nome: 'Panificadora Cerrado',
+    email: 'rh@panificadora.com',
+    papel: 'INDUSTRIA',
+    senha: '123456',
+  },
 ];
 
 function gerarToken(usuario: Usuario): string {

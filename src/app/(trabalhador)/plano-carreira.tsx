@@ -3,8 +3,10 @@ import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { ActivityIndicator, Linking, Pressable, StyleSheet, View } from 'react-native';
 
+import { CarreiraChat } from '@/components/carreira/carreira-chat';
 import { ThemedText } from '@/components/themed-text';
 import { AppHeader } from '@/components/ui/app-header';
+import { AuthButton } from '@/components/ui/auth-button';
 import { Card } from '@/components/ui/card';
 import { Screen } from '@/components/ui/screen';
 import { Tag } from '@/components/ui/tag';
@@ -34,9 +36,11 @@ export default function PlanoCarreiraScreen() {
 
   return (
     <Screen scroll padded={false}>
-      <AppHeader centered title="Plano de carreira" subtitle="Como evoluir na indústria de alimentos" />
+      <AppHeader centered title="Plano de carreira" subtitle="Como evoluir na indústria de alimentos" right={<AuthButton />} />
 
       <View style={styles.body}>
+        <CarreiraChat />
+
         {carregando && !plano ? (
           <ActivityIndicator color={Brand.azulRio} style={{ marginTop: Spacing.five }} />
         ) : plano ? (

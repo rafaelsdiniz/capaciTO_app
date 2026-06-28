@@ -5,6 +5,7 @@ import { ActivityIndicator, FlatList, Linking, Pressable, ScrollView, StyleSheet
 
 import { ThemedText } from '@/components/themed-text';
 import { AppHeader } from '@/components/ui/app-header';
+import { AuthButton } from '@/components/ui/auth-button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Screen } from '@/components/ui/screen';
 import { Tag } from '@/components/ui/tag';
@@ -51,7 +52,7 @@ export default function EditaisScreen() {
 
   return (
     <Screen padded={false}>
-      <AppHeader centered title="Editais & Cursos" subtitle="Qualifique-se de graça ou com bolsa no TO" />
+      <AppHeader centered title="Editais & Cursos" subtitle="Qualifique-se de graça ou com bolsa no TO" right={<AuthButton />} />
 
       <View style={styles.controles}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips}>

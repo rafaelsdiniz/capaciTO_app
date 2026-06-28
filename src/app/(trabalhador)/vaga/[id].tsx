@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
@@ -11,11 +11,14 @@ import { Screen } from '@/components/ui/screen';
 import { Tag } from '@/components/ui/tag';
 import { Brand, Spacing } from '@/constants/theme';
 import { api } from '@/lib/api';
+import { useSession } from '@/lib/session/session-context';
 import type { Competencia, VagaComMatch } from '@/lib/api/types';
 
 /** Detalhe da vaga + candidatura (RF24, RF27; RN05). */
 export default function VagaScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const router = useRouter();
+  const { usuario } = useSession();
   const [vaga, setVaga] = useState<VagaComMatch | null>(null);
   const [carregando, setCarregando] = useState(true);
   const [candidatando, setCandidatando] = useState(false);
@@ -34,6 +37,11 @@ export default function VagaScreen() {
 
   async function candidatar() {
     if (!vaga) return;
+    // Entrada livre: só exige login na hora de se candidatar (RF24).
+    if (!usuario) {
+      router.push('/login' as Href);
+      return;
+    }
     setCandidatando(true);
     try {
       await api.vagas.candidatar(vaga.id);
@@ -108,9 +116,15 @@ export default function VagaScreen() {
             </Card>
           ) : (
             <Button
-              title={vaga.compativel ? 'Candidatar-se' : 'Candidatar mesmo assim'}
-              icon="send"
-              variant={vaga.compativel ? 'primary' : 'outline'}
+              title={
+                !usuario
+                  ? 'Entrar para se candidatar'
+                  : vaga.compativel
+                    ? 'Candidatar-se'
+                    : 'Candidatar mesmo assim'
+              }
+              icon={!usuario ? 'log-in' : 'send'}
+              variant={vaga.compativel || !usuario ? 'primary' : 'outline'}
               onPress={candidatar}
               loading={candidatando}
             />

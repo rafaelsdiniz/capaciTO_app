@@ -36,6 +36,7 @@ export function AppHeader({
   if (centered) {
     return (
       <View style={styles.centered}>
+        {right ? <View style={styles.centeredTopRow}>{right}</View> : null}
         {title ? <ThemedText style={styles.centeredTitle}>{title}</ThemedText> : null}
         <View style={styles.centeredAccent} />
         {subtitle ? (
@@ -101,7 +102,8 @@ const styles = StyleSheet.create({
   largeTopRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 28 },
   largeTitle: { fontFamily: FontFamily.tituloBold, fontSize: 30, lineHeight: 36, marginTop: Spacing.one },
 
-  centered: { alignItems: 'center', paddingHorizontal: Spacing.four, paddingTop: Spacing.four, paddingBottom: Spacing.three, gap: Spacing.one },
+  centered: { alignItems: 'center', paddingHorizontal: Spacing.four, paddingTop: Spacing.three, paddingBottom: Spacing.three, gap: Spacing.one },
+  centeredTopRow: { alignSelf: 'stretch', alignItems: 'flex-end', minHeight: 34 },
   centeredTitle: { fontFamily: FontFamily.tituloBold, fontSize: 26, lineHeight: 32, color: Brand.azulRio, textAlign: 'center' },
   centeredAccent: { width: 40, height: 3, borderRadius: Radius.pill, backgroundColor: Brand.dourado },
   centeredSubtitle: { textAlign: 'center' },
