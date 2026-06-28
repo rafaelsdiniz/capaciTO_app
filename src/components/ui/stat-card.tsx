@@ -35,5 +35,5 @@ export function StatCard({
 const styles = StyleSheet.create({
   card: { flex: 1, gap: Spacing.one },
   iconBox: { width: 40, height: 40, borderRadius: Radius.sm, alignItems: 'center', justifyContent: 'center' },
-  valor: { fontFamily: FontFamily.tituloBold, fontSize: 26, color: Brand.azulRio },
+  valor: { fontFamily: FontFamily.display, fontSize: 26, color: Brand.azulRio },
 });

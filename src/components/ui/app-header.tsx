@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
 
   large: { paddingHorizontal: Spacing.four, paddingTop: Spacing.three, paddingBottom: Spacing.two, gap: 2 },
   largeTopRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 28 },
-  largeTitle: { fontFamily: FontFamily.tituloBold, fontSize: 30, lineHeight: 36, marginTop: Spacing.one },
+  largeTitle: { fontFamily: FontFamily.display, fontSize: 30, lineHeight: 36, marginTop: Spacing.one },
 
   centered: { alignItems: 'center', paddingHorizontal: Spacing.four, paddingTop: Spacing.three, paddingBottom: Spacing.three, gap: Spacing.one },
   centeredTopRow: { alignSelf: 'stretch', alignItems: 'flex-end', minHeight: 34 },

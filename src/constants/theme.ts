@@ -61,17 +61,19 @@ export const Colors = {
 export type ThemeColor = keyof typeof Colors.light & keyof typeof Colors.dark;
 
 /**
- * Famílias tipográficas da marca — Nunito (família redonda, próxima de
- * Nimbus Sans Round). Carregada via @expo-google-fonts (ver src/app/_layout.tsx).
- * A hierarquia é dada pelos pesos: Bold/SemiBold em títulos e tags, Regular/
- * Medium no corpo.
+ * Famílias tipográficas da marca — Outfit (sans geométrica, leitura clara em
+ * telas). Carregada via expo-font a partir de assets/fonts (ver src/app/_layout.tsx).
+ * A hierarquia é dada pelos pesos: ExtraBold em grandes títulos/display,
+ * Bold/SemiBold em títulos e tags, Regular/Medium no corpo.
  */
 export const FontFamily = {
-  tituloBold: 'Nunito_700Bold',
-  tituloSemi: 'Nunito_600SemiBold',
-  corpo: 'Nunito_400Regular',
-  corpoMedio: 'Nunito_500Medium',
-  tag: 'Nunito_600SemiBold',
+  /** Display — números e grandes títulos de destaque (peso máximo). */
+  display: 'Outfit_800ExtraBold',
+  tituloBold: 'Outfit_700Bold',
+  tituloSemi: 'Outfit_600SemiBold',
+  corpo: 'Outfit_400Regular',
+  corpoMedio: 'Outfit_500Medium',
+  tag: 'Outfit_600SemiBold',
 } as const;
 
 export const Fonts = Platform.select({

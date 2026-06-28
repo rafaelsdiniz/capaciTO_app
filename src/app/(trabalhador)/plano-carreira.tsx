@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
   resumoRow: { flexDirection: 'row', gap: Spacing.two },
   resumoCard: { flex: 1, alignItems: 'center', gap: 4 },
   resumoIcon: { width: 42, height: 42, borderRadius: Radius.md, alignItems: 'center', justifyContent: 'center' },
-  resumoValor: { fontFamily: FontFamily.tituloBold, fontSize: 28, lineHeight: 32, color: Brand.chumbo },
+  resumoValor: { fontFamily: FontFamily.display, fontSize: 28, lineHeight: 32, color: Brand.chumbo },
 
   parabens: { alignItems: 'center', gap: Spacing.two, paddingVertical: Spacing.four },
   parabensTitulo: { fontSize: 18 },

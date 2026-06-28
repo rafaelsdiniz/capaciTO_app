@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useFocusEffect, useRouter } from 'expo-router';
+import { useFocusEffect, useRouter, type Href } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { Pressable, StyleSheet, Switch, View } from 'react-native';
 
@@ -36,8 +36,15 @@ export default function PerfilScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      carregar();
-    }, [carregar]),
+      // Entrada livre: o perfil só carrega quando há sessão. Sem login, mostramos
+      // o estado de "visitante" (evita exibir um perfil mock como se logado).
+      if (usuario) {
+        carregar();
+      } else {
+        setPerfil(null);
+        setQtdCandidaturas(0);
+      }
+    }, [carregar, usuario]),
   );
 
   async function alternarVisibilidade(v: boolean) {
@@ -51,6 +58,37 @@ export default function PerfilScreen() {
   }
 
   const completude = perfil?.completude ?? 0;
+
+  // Visitante (sem sessão): não exibimos um perfil; convidamos a entrar/cadastrar.
+  if (!usuario) {
+    return (
+      <Screen scroll padded={false}>
+        <AppHeader centered title="Meu perfil" subtitle="Seu currículo na indústria de alimentos" right={<AuthButton />} />
+
+        <View style={styles.body}>
+          <Card style={styles.visitante}>
+            <View style={styles.visitanteIcon}>
+              <Ionicons name="person-circle-outline" size={48} color={Brand.azulRio} />
+            </View>
+            <ThemedText type="smallBold" style={styles.visitanteTitulo}>
+              Você ainda não entrou
+            </ThemedText>
+            <ThemedText type="small" themeColor="textSecondary" style={styles.visitanteTexto}>
+              Entre ou crie sua conta para montar sua carteira digital de qualificação e ser
+              encontrado pelas indústrias.
+            </ThemedText>
+            <Button title="Entrar" icon="log-in-outline" onPress={() => router.push('/login' as Href)} />
+            <Button
+              title="Criar cadastro"
+              icon="person-add-outline"
+              variant="outline"
+              onPress={() => router.push('/registro' as Href)}
+            />
+          </Card>
+        </View>
+      </Screen>
+    );
+  }
 
   return (
     <Screen scroll padded={false}>
@@ -168,4 +206,16 @@ const styles = StyleSheet.create({
   menu: { gap: Spacing.two },
   menuRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.three },
   menuIcon: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
+
+  visitante: { alignItems: 'center', gap: Spacing.three, paddingVertical: Spacing.four },
+  visitanteIcon: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#E6EEF4',
+  },
+  visitanteTitulo: { fontSize: 18, textAlign: 'center' },
+  visitanteTexto: { textAlign: 'center' },
 });
